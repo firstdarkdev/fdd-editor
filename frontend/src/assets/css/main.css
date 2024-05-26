@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --ct-control-bg: #fafafa;
+    --control-text: #000000;
+}
+
+.dark {
+    --ct-control-bg: #1d1e45;
+    --control-text: #ffffff;
+}
+
+.editorbar {
+    background: var(--ct-control-bg) !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-height: 50px;
+    padding: 10px 40px;
+    z-index: 200;
+}
+
+.editorbar .button-bar {
+    position: fixed;
+    top: 14px;
+    right: 30px;
+}
+
+.editor-button {
+    display: block;
+    text-align: center;
+    border-radius: 5px;
+    background: gray;
+    color: white;
+    width: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    height: 20px;
+    transition: all 0.5ms ease-in-out;
+}
+
+.editor-button:hover {
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+}
+
+.content-container {
+    margin-top: 50px;
+    padding: 20px;
+}
+
+.active_key {
+    position: relative;
+}
+
+.active_key:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    background: yellow;
+    width: 100%;
+    height: 3px;
+    border-radius: 1px;
+}
+
+.tab-key {
+    position: relative;
+}
+
+.tab-key:hover:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    background: aqua;
+    width: 100%;
+    height: 3px;
+    border-radius: 1px;
+}
+
+.plus_button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: block;
+    text-align: center;
+    border-radius: 5px;
+    background: gray;
+    color: white;
+    width: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    height: 20px;
+    transition: all 0.5ms ease-in-out;
+    cursor: pointer;
+}
+
+.plus_button:hover {
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+}
+
+.vs__search::placeholder,
+.vs__dropdown-toggle,
+.vs__dropdown-menu {
+    background: var(--ct-control-bg) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0.5rem !important;
+    color: var(--control-text) !important;
+    padding: 4px !important;
+}
+
+.vs__selected {
+    color: var(--control-text) !important;
+    margin: 0 !important;
+    background: var(--ct-control-bg) !important;
+}
+
+.vs__deselect {
+    fill: var(--control-text) !important;
+}
+
+.vs__clear,
+.vs__open-indicator {
+    fill: var(--control-text) !important;
+}
+
+.noclear .vs__clear {
+    display: none !important;
+}
+
+.textt .vs__open-indicator {
+    display: none !important;
+}
+
+.dark .select-custom {
+    background-color: rgba(112, 125, 155, .05) !important;
+    color: white !important;
+    appearance: initial !important;
+}
+
+.dark .swal2-popup {
+    background-color: var(--ct-control-bg);
+    color: var(--control-text);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .swal2-title {
+    color: var(--control-text);
+}
+
+.dark .swal2-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.popup {
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.popup_dialog {
+    position: relative;
+    width: 600px;
+    min-height: 300px;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
+.cls_btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    transition: all .5ms ease-in-out;
+}
+
+.cls_btn:hover {
+    font-size: 20px;
+}
+
+.hljs {
+    text-align: left;
+    border-radius: 10px;
+    height: 200px;
+    overflow-y: auto;
+}
+
+.toasttt {
+    z-index: 100000 !important;
+}
