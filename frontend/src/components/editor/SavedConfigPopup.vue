@@ -16,7 +16,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useEditor } from '@/stores/editor.js'
 import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { useToast } from '@/stores/toaststore'

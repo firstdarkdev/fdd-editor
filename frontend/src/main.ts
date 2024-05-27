@@ -12,14 +12,10 @@ import 'sweetalert2/dist/sweetalert2.css'
 import 'highlight.js/styles/stackoverflow-dark.css'
 
 import hljs from 'highlight.js/lib/core';
-import javascript from 'highlight.js/lib/languages/javascript';
 import yaml from 'highlight.js/lib/languages/yaml';
-import json from 'highlight.js/lib/languages/json';
 import hljsVuePlugin from "@highlightjs/vue-plugin";
 
-hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('toml', yaml);
-hljs.registerLanguage('json', json);
 
 const app = createApp(App)
 

@@ -81,7 +81,7 @@
 import {useEditor} from "@/stores/editor";
 import EditorField from "@/components/editor/EditorField.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import { faPlus, faTrash, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { addToArray, headerToDisplay } from '@/composables/FieldUtils'
 import { initFlowbite } from 'flowbite'
 import { watch } from 'vue'

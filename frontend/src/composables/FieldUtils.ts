@@ -10,17 +10,10 @@ export const addToArray = (target: any, key: any) => {
         target.push(mcCmd);
     }
 
-    if (key === 'requiredRoles'
-      || key === 'deniedRoles'
-      || key === 'ignoredCommands'
-      || key === 'ignoredThreads'
-      || key === 'largeImageKey'
-      || key === 'smallImageKey'
-    ) {
+    if (key === 'requiredRoles' || key === 'deniedRoles' || key === 'ignoredCommands' || key === 'ignoredThreads'
+      || key === 'largeImageKey' || key === 'smallImageKey') {
         target.push("")
     }
-
-    console.log(key)
 
     if (key === 'entries') {
         const filterEntry = {

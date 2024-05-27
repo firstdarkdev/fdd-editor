@@ -11,14 +11,14 @@
 </template>
 
 <script setup lang="ts">
-  import {onMounted} from "vue";
-  import {useAppState} from "@/stores/appstate";
+import {onMounted} from "vue";
+import {useAppState} from "@/stores/appstate";
 
-  onMounted(() => {
-    setTimeout(() => {
-      useAppState().setSplashScreen(false);
-    }, 3000);
-  })
+onMounted(() => {
+  setTimeout(() => {
+    useAppState().setSplashScreen(false);
+  }, 3000);
+})
 </script>
 
 <style lang="css" scoped>

@@ -10,15 +10,15 @@ import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JavalinGson;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 
+import java.io.StringReader;
+
 import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
 
 public class BackendServer {
 
-    private final Javalin javalin;
-
     public BackendServer(int port) {
-        javalin = Javalin.create(config -> {
+        Javalin javalin = Javalin.create(config -> {
             config.staticFiles.add("web", Location.EXTERNAL);
             config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
             config.jsonMapper(new JavalinGson());
@@ -50,8 +50,10 @@ public class BackendServer {
             return;
         }
 
-        if (f.contentType() == null || !f.contentType().equalsIgnoreCase("application/toml")) {
-            context.json(StandardResponse.error("Unsupported file"));
+        try {
+            ConfigConverter.INSTANCE.getTomlParser().parse(f.content());
+        } catch (Exception e) {
+            context.json(StandardResponse.error("Unsupported or corrupt file"));
             return;
         }
 

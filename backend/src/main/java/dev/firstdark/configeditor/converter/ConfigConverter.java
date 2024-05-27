@@ -9,7 +9,6 @@ import me.hypherionmc.moonconfig.toml.TomlParser;
 import me.hypherionmc.moonconfig.toml.TomlWriter;
 
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.*;
 
 public class ConfigConverter {
@@ -18,6 +17,8 @@ public class ConfigConverter {
 
     @Getter
     private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+
+    @Getter
     private final TomlParser tomlParser = new TomlParser();
     private final TomlWriter tomlWriter = new TomlWriter();
 

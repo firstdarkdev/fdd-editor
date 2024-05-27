@@ -56,7 +56,6 @@
             </button>
           </div>
         </div>
-
       </div>
 
       <!-- =============== Variables ================ -->
@@ -85,7 +84,6 @@
             </button>
           </div>
         </div>
-
       </div>
 
 
@@ -165,7 +163,6 @@
           </button>
         </div>
       </div>
-
     </div>
 
     <!-- ======================= Message Filtering =================== -->
@@ -215,7 +212,6 @@
           </button>
         </div>
       </div>
-
     </div>
 
   </div>
@@ -225,8 +221,7 @@
 import {initFlowbite} from "flowbite";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
-import TaggableInput from '@/components/editor/TaggableInput.vue'
-import { headerToDisplay } from '../../composables/FieldUtils'
+import { headerToDisplay } from '@/composables/FieldUtils'
 
 const props = defineProps(['identifier', 'value', 'target']);
 initFlowbite();
