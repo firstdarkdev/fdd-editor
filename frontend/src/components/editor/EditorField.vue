@@ -31,12 +31,12 @@
       <!-- =============== Simple RPC Specific  ================ -->
 
       <!-- =============== Buttons ================ -->
-      <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('url')" class="grid grid-cols-2 w-full gap-2 items-center">
+      <div v-if="typeof target === 'object' && (target[identifier].hasOwnProperty('url'))" class="grid grid-cols-2 w-full gap-2 items-center">
         <div>
           <p class="text-sm mb-1 pl-1">Button Title</p>
           <input
             type="text"
-            v-model="target[identifier].title"
+            v-model="target[identifier].label"
             class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
           />
         </div>
@@ -46,12 +46,39 @@
           <div class="flex gap-1">
             <input
               type="text"
-              v-model="target[identifier].label"
+              v-model="target[identifier].url"
               aria-describedby="helper-text-explanation"
               class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             />
 
             <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('url'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+              <FontAwesomeIcon :icon="faTrash" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="typeof target === 'object' && (target[identifier].hasOwnProperty('Url'))" class="grid grid-cols-2 w-full gap-2 items-center">
+        <div>
+          <p class="text-sm mb-1 pl-1">Button Title</p>
+          <input
+            type="text"
+            v-model="target[identifier].Title"
+            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          />
+        </div>
+
+        <div>
+          <p class="text-sm mb-1 pl-1">Button URL</p>
+          <div class="flex gap-1">
+            <input
+              type="text"
+              v-model="target[identifier].Url"
+              aria-describedby="helper-text-explanation"
+              class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            />
+
+            <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('Url'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
               <FontAwesomeIcon :icon="faTrash" />
             </button>
           </div>
@@ -80,6 +107,33 @@
             />
 
             <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+              <FontAwesomeIcon :icon="faTrash" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('Value')" class="grid grid-cols-2 w-full gap-2 items-center">
+        <div>
+          <p class="text-sm mb-1 pl-1">Variable</p>
+          <input
+            type="text"
+            v-model="target[identifier].Name"
+            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          />
+        </div>
+
+        <div>
+          <p class="text-sm mb-1 pl-1">Value</p>
+          <div class="flex gap-1">
+            <input
+              type="text"
+              v-model="target[identifier].Value"
+              aria-describedby="helper-text-explanation"
+              class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            />
+
+            <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('Value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
               <FontAwesomeIcon :icon="faTrash" />
             </button>
           </div>
@@ -118,7 +172,7 @@
         <option value="COMBO">Combo</option>
       </select>
 
-      <button v-if="Array.isArray(target) && !(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('url')) || target[identifier].hasOwnProperty('value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="ml-2 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+      <button v-if="Array.isArray(target) && !(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('url') || target[identifier].hasOwnProperty('Url')) || target[identifier].hasOwnProperty('value') || target[identifier].hasOwnProperty('Value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="ml-2 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
         <FontAwesomeIcon :icon="faTrash" />
       </button>
     </div>

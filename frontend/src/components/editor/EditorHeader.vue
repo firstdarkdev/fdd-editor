@@ -7,27 +7,31 @@
     </div>
 
     <div class="button-bar flex gap-1">
-      <a href="javascript:void(0);" class="editor-button">
+      <!--a href="javascript:void(0);" class="editor-button">
         <FontAwesomeIcon :icon="faFileAlt" />
+      </a-->
+
+      <a href="https://github.com/hypherionmc/fdd-editor" target="_blank" class="editor-button" title="GitHub">
+        <FontAwesomeIcon :icon="faGithub" />
       </a>
 
-      <a @click="saveConfigFile(true)" href="javascript:void(0);" class="editor-button">
+      <a @click="saveConfigFile(true)" href="javascript:void(0);" class="editor-button" title="Download Config">
         <FontAwesomeIcon :icon="faSave" />
       </a>
 
-      <a @click="saveConfigFile()" href="javascript:void(0);" class="editor-button">
+      <a @click="saveConfigFile()" href="javascript:void(0);" class="editor-button" title="View Config">
         <FontAwesomeIcon :icon="faCode" />
       </a>
 
-      <a href="javascript:void(0);" class="editor-button">
+      <!--a href="javascript:void(0);" class="editor-button">
         <FontAwesomeIcon :icon="faEye" />
       </a>
 
       <a href="javascript:void(0);" class="editor-button">
         <FontAwesomeIcon :icon="faQuestion" />
-      </a>
+      </a-->
 
-      <a href="javascript:window.location.reload();" class="editor-button">
+      <a href="javascript:window.location.reload();" class="editor-button" title="Close Config">
         <FontAwesomeIcon :icon="faTimes" />
       </a>
     </div>
@@ -38,4 +42,5 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faEye, faFileAlt, faQuestion, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { saveConfigFile } from '@/composables/EditorFunctions'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
 </script>

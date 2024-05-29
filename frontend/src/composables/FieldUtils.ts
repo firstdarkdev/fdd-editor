@@ -35,6 +35,15 @@ export const addToArray = (target: any, key: any) => {
         target.push(mcButton);
     }
 
+    if (key === 'Buttons') {
+        const stardewButton = {
+            Title: "",
+            Url: ""
+        }
+
+        target.push(stardewButton);
+    }
+
     if (key === 'variables') {
         const mcVariable = {
             name: '',
@@ -42,6 +51,15 @@ export const addToArray = (target: any, key: any) => {
         }
 
         target.push(mcVariable)
+    }
+
+    if (key === 'Variables') {
+        const stardewVariable = {
+            Name: '',
+            Value: ''
+        }
+
+        target.push(stardewVariable)
     }
 
     if (key === 'dimensions') {
