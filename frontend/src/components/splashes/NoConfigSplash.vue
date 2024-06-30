@@ -1,6 +1,7 @@
 <template>
   <div class="absolute top-0 left-0 w-full h-full bg-ct-light-primary dark:bg-ct-dark-primary flex items-center justify-center text-black dark:text-white">
     <div class="text-center">
+      <h1 class="font-extrabold text-red-600 uppercase">WARNING: Make a backup of your config when working with this editor!</h1> <br/>
       <img src="@/assets/img/config_editor_light.svg" class="block dark:hidden w-full" alt="logo" />
       <img src="@/assets/img/config_editor.svg" class="hidden dark:block w-full" alt="logo" />
       <br /><br />
