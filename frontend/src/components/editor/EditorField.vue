@@ -1,7 +1,9 @@
 <template>
   <div class="flex gap-4 mt-2 items-center">
     <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg relative w-full flex items-center" v-if="!(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('searchMode')))">
-      <p style="min-width: 220px;" class="mr-5" v-if="!Array.isArray(target)">{{ headerToDisplay(props.identifier) }}</p>
+      <p style="min-width: 220px;" class="mr-5 relative" v-if="!Array.isArray(target)" @mouseenter="showTooltip(identifier, useEditor().getConfig.comments[useEditor().currentSection + '.' + identifier])" @mouseleave="useAppState().setHoverTooltip(false)">
+        {{ headerToDisplay(props.identifier) }}
+      </p>
 
       <!-- ============= Text Input ============ -->
       <input
@@ -140,37 +142,43 @@
         </div>
       </div>
 
-
       <!-- =============== Simple Discord Link Specific =================== -->
-      <select
+      <CustomSelectControl
         v-if="identifier === 'channel'"
         v-model="target[identifier]"
-        class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-        <option value="CHAT">Chat</option>
-        <option value="EVENT">Events</option>
-        <option value="CONSOLE">Console</option>
-      </select>
+        class="w-full"
+        :options="[
+          { value: 'CHAT', label: 'Chat' },
+          { value: 'EVENT', label: 'Events' },
+          { value: 'CONSOLE', label: 'Console' },
+          { value: 'OVERRIDE', label: 'Override' }
+        ]"
+      />
 
-      <select
+      <CustomSelectControl
         v-if="identifier === 'botStatusType'"
         v-model="target[identifier]"
-        class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-        <option value="PLAYING">Playing</option>
-        <option value="STREAMING">Streaming</option>
-        <option value="WATCHING">Watching</option>
-        <option value="LISTENING">Listening</option>
-        <option value="CUSTOM_STATUS">Custom</option>
-      </select>
+        class="w-full"
+        :options="[
+          { value: 'PLAYING', label: 'Playing' },
+          { value: 'STREAMING', label: 'Streaming' },
+          { value: 'WATCHING', label: 'Watching' },
+          { value: 'LISTENING', label: 'Listening' },
+          { value: 'CUSTOM_STATUS', label: 'Custom' }
+        ]"
+      />
 
-      <select
+      <CustomSelectControl
         v-if="identifier === 'playerAvatarType'"
         v-model="target[identifier]"
-        class="select-custom border border-ct-card text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-        <option value="AVATAR">Avatar</option>
-        <option value="HEAD">Player Head</option>
-        <option value="BODY">Body</option>
-        <option value="COMBO">Combo</option>
-      </select>
+        class="w-full"
+        :options="[
+          { value: 'AVATAR', label: 'Avatar' },
+          { value: 'HEAD', label: 'Player Head' },
+          { value: 'BODY', label: 'Body' },
+          { value: 'COMBO', label: 'Combo' }
+        ]"
+      />
 
       <button v-if="Array.isArray(target) && !(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('url') || target[identifier].hasOwnProperty('Url')) || target[identifier].hasOwnProperty('value') || target[identifier].hasOwnProperty('Value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="ml-2 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
         <FontAwesomeIcon :icon="faTrash" />
@@ -242,24 +250,28 @@
 
       <div>
         <p class="text-sm mb-1 pl-1">Search Mode</p>
-        <select
+        <CustomSelectControl
           v-model="target[identifier].searchMode"
-          class="select-custom border border-ct-card text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-          <option value="CONTAINS">Contains</option>
-          <option value="STARTS_WITH">Starts With</option>
-          <option value="MATCHES">Exact Match</option>
-        </select>
+          class="w-full"
+          :options="[
+            { value: 'CONTAINS', label: 'Contains' },
+            { value: 'STARTS_WITH', label: 'Starts With' },
+            { value: 'MATCHES', label: 'Exact Match' }
+        ]"
+        />
       </div>
 
       <div>
         <p class="text-sm mb-1 pl-1">Action</p>
         <div class="flex gap-1">
-          <select
+          <CustomSelectControl
             v-model="target[identifier].action"
-            class="select-custom border border-ct-card text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-            <option value="REPLACE">Replace</option>
-            <option value="IGNORE">Ignore Message</option>
-          </select>
+            class="w-full"
+            :options="[
+              { value: 'REPLACE', label: 'Replace' },
+              { value: 'IGNORE', label: 'Ignore Message' }
+          ]"
+          />
 
           <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('searchMode'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
             <FontAwesomeIcon :icon="faTrash" />
@@ -276,9 +288,22 @@ import {initFlowbite} from "flowbite";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
 import { headerToDisplay } from '@/composables/FieldUtils'
+import CustomSelectControl from '@/components/editor/CustomSelectControl.vue'
+import { useEditor } from '@/stores/editor'
+import { useAppState } from '@/stores/appstate'
 
 const props = defineProps(['identifier', 'value', 'target']);
 initFlowbite();
+
+const showTooltip = (title: any, data: any) => {
+  if (data) {
+    useAppState().setTooltipData({
+      title: title,
+      body: data
+    })
+    useAppState().setHoverTooltip(true);
+  }
+}
 
 const limitLevel = () => {
     if (props.target[props.identifier].permissionLevel > 4) {

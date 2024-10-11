@@ -32,19 +32,26 @@
     display: block;
     text-align: center;
     border-radius: 5px;
-    background: gray;
-    color: white;
+    background: transparent;
+    color: black;
     width: 20px;
     line-height: 20px;
-    font-size: 12px;
+    font-size: 18px;
     height: 20px;
     transition: all 0.5ms ease-in-out;
+    margin-right: 5px;
+}
+
+.dark .editor-button {
+    color: white;
+}
+
+.dark .editor-button:hover {
+   color: lightgray;
 }
 
 .editor-button:hover {
-    width: 22px;
-    height: 22px;
-    line-height: 22px;
+    color: blue;
 }
 
 .content-container {

@@ -5,12 +5,23 @@ export const useAppState = defineStore('editor-state', {
         splashScreen: true,
         changelog: false,
         codeEditor: false,
-        theme: 'dark'
+        theme: 'dark',
+        showHoverTooltip: false,
+        toolTipData: {
+            title: '',
+            body: ''
+        }
     }),
 
     actions: {
         setSplashScreen(payload: boolean) {
             this.splashScreen = payload;
+        },
+        setHoverTooltip(payload: boolean) {
+            this.showHoverTooltip = payload;
+        },
+        setTooltipData(payload: any) {
+          this.toolTipData = payload;
         },
         toggleTheme() {
             this.theme = this.theme === 'dark' ? 'light' : 'dark';
@@ -33,6 +44,12 @@ export const useAppState = defineStore('editor-state', {
         },
         getSavedThemeMode(state) {
             return state.theme;
+        },
+        shouldShowTooltip(state) {
+            return state.showHoverTooltip;
+        },
+        getToolTipDate(state) {
+            return state.toolTipData
         }
     }
 });

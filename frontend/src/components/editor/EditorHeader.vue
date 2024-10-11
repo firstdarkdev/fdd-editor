@@ -7,11 +7,8 @@
     </div>
 
     <div class="button-bar flex gap-1">
-      <!--a href="javascript:void(0);" class="editor-button">
-        <FontAwesomeIcon :icon="faFileAlt" />
-      </a-->
 
-      <a href="https://github.com/hypherionmc/fdd-editor" target="_blank" class="editor-button" title="GitHub">
+      <a href="https://github.com/hypherionmc/fdd-editor" target="_blank" class="editor-button" title="Report Issue">
         <FontAwesomeIcon :icon="faGithub" />
       </a>
 
@@ -23,16 +20,8 @@
         <FontAwesomeIcon :icon="faCode" />
       </a>
 
-      <!--a href="javascript:void(0);" class="editor-button">
-        <FontAwesomeIcon :icon="faEye" />
-      </a>
-
-      <a href="javascript:void(0);" class="editor-button">
-        <FontAwesomeIcon :icon="faQuestion" />
-      </a-->
-
       <a href="javascript:window.location.reload();" class="editor-button" title="Close Config">
-        <FontAwesomeIcon :icon="faTimes" />
+        <FontAwesomeIcon :icon="faPowerOff" />
       </a>
     </div>
   </div>
@@ -40,7 +29,7 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faCode, faEye, faFileAlt, faQuestion, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faEye, faFileAlt, faPowerOff, faQuestion, faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { saveConfigFile } from '@/composables/EditorFunctions'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 </script>

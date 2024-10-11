@@ -1,5 +1,5 @@
 <template>
-  <div class="content-container" v-if="useEditor().isConfigLoaded">
+  <div class="content-container" style="height: 100vh !important;" v-if="useEditor().isConfigLoaded" @mousemove="updateTooltipPosition">
     <div class="flex gap-4 items-center bg-ct-card-light dark:bg-ct-card-dark p-4 cursor-pointer overflow-x-auto" style="border-radius: 5px" v-if="useEditor().isConfigLoaded">
       <p class="tab-key" @click="useEditor().setCurrentSection(key)" v-for="key in Object.keys(useEditor().getConfig.config as any)" :class="useEditor().getCurrentSection === key ? 'active_key' : ''">
         {{ headerToDisplay(key) }}
@@ -74,6 +74,13 @@
         <!-- === End Dimension Overrides Controls === -->
       </div>
     </div>
+
+    <div class="mctooltip text-white" :style="tooltipStyle" v-if="useAppState().shouldShowTooltip">
+      <div class="mctooltip-inner">
+        <p class="title">{{ useAppState().getToolTipDate.title }}</p>
+        <p class="downloads">{{ useAppState().getToolTipDate.body }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -84,7 +91,8 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { addToArray, headerToDisplay } from '@/composables/FieldUtils'
 import { initFlowbite } from 'flowbite'
-import { watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useAppState } from '../stores/appstate'
 
 watch(() => useEditor().getCurrentSection, () => {
   initFlowbite()
@@ -93,4 +101,56 @@ watch(() => useEditor().getCurrentSection, () => {
 const deleteArrayEntry = (target: any, index: any) => {
   target.splice(index, 1);
 }
+
+const tooltipPosition = ref({ x: 0, y: 0 });
+
+const updateTooltipPosition = (e: MouseEvent) => {
+  tooltipPosition.value = {
+    x: e.pageX - window.scrollX,
+    y: e.pageY
+  };
+};
+
+const tooltipStyle = computed(() => {
+  let left = tooltipPosition.value.x;
+  let top = tooltipPosition.value.y + 10;
+
+  return {
+    left: `${left}px`,
+    top: `${top}px`
+  };
+});
 </script>
+
+<style>
+.mctooltip {
+  min-width: 50px;
+  max-width: 300px;
+  min-height: 50px;
+  background: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 5px;
+  padding: 2px;
+  z-index: 5000;
+}
+
+.mctooltip-inner {
+  border: 2px solid #290560;
+  padding: 2px 5px;
+}
+
+.mctooltip .title {
+  margin-bottom: 0;
+  font-family: 'MC', Fallback, sans-serif !important;
+  color: yellow;
+  font-size: 18px;
+}
+
+.mctooltip .downloads {
+  font-family: 'MC', Fallback, sans-serif !important;
+  font-size: 14px;
+  color: aqua;
+}
+</style>
