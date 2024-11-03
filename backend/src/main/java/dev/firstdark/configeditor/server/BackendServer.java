@@ -10,6 +10,10 @@ import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JavalinGson;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
 
@@ -22,6 +26,17 @@ public class BackendServer {
             config.staticFiles.add("web", Location.EXTERNAL);
             config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
             config.jsonMapper(new JavalinGson());
+        });
+
+        javalin.get("/*", ctx -> {
+            String path = "web/index.html";
+            Path path1 = Paths.get(path);
+            if (Files.exists(path1)) {
+                ctx.contentType("text/html");
+                ctx.result(Files.newInputStream(path1));
+            } else {
+                ctx.status(404).result("Index file not found");
+            }
         });
 
         javalin.unsafeConfig().router.apiBuilder(() -> path("/v1", () -> {
