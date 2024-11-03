@@ -9,13 +9,6 @@ import io.javalin.http.UploadedFile;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JavalinGson;
 import io.javalin.plugin.bundled.CorsPluginConfig;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
@@ -29,7 +22,7 @@ public class BackendServer {
             config.staticFiles.add("web", Location.EXTERNAL);
             config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
             config.jsonMapper(new JavalinGson());
-            config.spaRoot.addFile("/", "web/index.html", Location.EXTERNAL);
+            //config.spaRoot.addFile("/", "web/index.html", Location.EXTERNAL);
         });
 
         javalin.unsafeConfig().router.apiBuilder(() -> path("/v1", () -> {
