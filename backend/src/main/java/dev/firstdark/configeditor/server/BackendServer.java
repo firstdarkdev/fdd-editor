@@ -30,10 +30,9 @@ public class BackendServer {
 
         javalin.get("/*", ctx -> {
             String path = "web/index.html";
-            Path path1 = Paths.get(path);
-            if (Files.exists(path1)) {
+            if (Files.exists(Paths.get(path))) {
                 ctx.contentType("text/html");
-                ctx.result(Files.newInputStream(path1));
+                ctx.result(Files.newInputStream(Paths.get(path)));
             } else {
                 ctx.status(404).result("Index file not found");
             }

@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4 mt-2 items-center">
-    <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg relative w-full flex items-center" v-if="!(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('searchMode') || target[identifier].hasOwnProperty('minecraftCommand')))">
+    <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg relative w-full flex items-center" v-if="!(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('searchMode') || target[identifier].hasOwnProperty('minecraftCommand')) || target[identifier].hasOwnProperty('botStatusType'))">
       <p style="min-width: 220px;" class="mr-5 relative" v-if="!Array.isArray(target)" @mouseenter="showTooltip(identifier, useEditor().getConfig.comments[useEditor().currentSection + '.' + identifier])" @mouseleave="useAppState().setHoverTooltip(false)">
         {{ headerToDisplay(props.identifier) }}
       </p>
@@ -249,6 +249,47 @@
             push-tags
           ></v-select>
           <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('minecraftCommand'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+            <FontAwesomeIcon :icon="faTrash" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('botStatusType')" class="grid grid-cols-3 w-full gap-2 items-center">
+      <div>
+        <p class="text-sm mb-1 pl-1">Status</p>
+        <input
+          type="text"
+          v-model="target[identifier].status"
+          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+        />
+      </div>
+
+      <div>
+        <p class="text-sm mb-1 pl-1">Status Type</p>
+        <CustomSelectControl
+          v-model="target[identifier].botStatusType"
+          class="w-full"
+          :options="[
+          { value: 'PLAYING', label: 'Playing' },
+          { value: 'STREAMING', label: 'Streaming' },
+          { value: 'WATCHING', label: 'Watching' },
+          { value: 'LISTENING', label: 'Listening' },
+          { value: 'CUSTOM_STATUS', label: 'Custom' }
+        ]"
+        />
+      </div>
+
+      <div>
+        <p class="text-sm mb-1 pl-1">Bot Status Streaming URL</p>
+        <div class="flex gap-1">
+          <input
+            type="text"
+            v-model="target[identifier].botStatusStreamingURL"
+            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+          />
+
+          <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('botStatusStreamingURL'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
             <FontAwesomeIcon :icon="faTrash" />
           </button>
         </div>

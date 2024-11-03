@@ -77,7 +77,7 @@ export const addToArray = (target: any, key: any) => {
         target.push(mcDim);
     }
 
-    if (key === 'roleAdded') {
+    if (key === 'roleAdded' || key === 'roleRemoved') {
         const roleAdded = {
             discordRole: '',
             minecraftCommand: []
@@ -86,13 +86,14 @@ export const addToArray = (target: any, key: any) => {
         target.push(roleAdded);
     }
 
-    if (key === 'roleRemoved') {
-        const roleRemoved = {
-            discordRole: '',
-            minecraftCommand: []
+    if (key === 'botStatus') {
+        const botStatus = {
+            status: '',
+            botStatusType: 'CUSTOM_STATUS',
+            botStatusStreamingURL: 'https://twitch.tv/twitch'
         }
 
-        target.push(roleRemoved);
+        target.push(botStatus);
     }
 }
 
