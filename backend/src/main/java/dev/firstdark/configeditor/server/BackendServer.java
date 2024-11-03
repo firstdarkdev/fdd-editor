@@ -29,19 +29,15 @@ public class BackendServer {
         });
 
         javalin.get("/*", ctx -> {
-            String requestedPath = "web" + ctx.path();
-            Path path = Paths.get(requestedPath);
-            if (Files.exists(path) && !Files.isDirectory(path)) {
+            if (ctx.path().contains("assets")) {
+                String requestedPath = "web" + ctx.path();
+                Path path = Paths.get(requestedPath);
                 ctx.contentType(getMimeType(requestedPath));
                 ctx.result(Files.newInputStream(path));
             } else {
                 String indexPath = "web/index.html";
-                if (Files.exists(Paths.get(indexPath))) {
-                    ctx.contentType("text/html");
-                    ctx.result(Files.newInputStream(Paths.get(indexPath)));
-                } else {
-                    ctx.status(404).result("Index file not found");
-                }
+                ctx.contentType("text/html");
+                ctx.result(Files.newInputStream(Paths.get(indexPath)));
             }
         });
 
@@ -103,6 +99,7 @@ public class BackendServer {
         if (filePath.endsWith(".html")) return "text/html";
         if (filePath.endsWith(".png")) return "image/png";
         if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) return "image/jpeg";
+        if (filePath.endsWith(".svg")) return "image/svg+xml";
         // Add other file types as needed
         return "application/octet-stream"; // Default MIME type
     }
