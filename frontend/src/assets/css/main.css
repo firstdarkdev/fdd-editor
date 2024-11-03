@@ -76,6 +76,7 @@
 
 .tab-key {
     position: relative;
+    font-size: 15px;
 }
 
 .tab-key:hover:after {

@@ -92,7 +92,11 @@ import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { addToArray, headerToDisplay } from '@/composables/FieldUtils'
 import { initFlowbite } from 'flowbite'
 import { computed, ref, watch } from 'vue'
-import { useAppState } from '../stores/appstate'
+import { useAppState } from '@/stores/appstate'
+import { BACKEND_URL } from '@/composables/EditorFunctions'
+import { useToast } from '@/stores/toaststore'
+
+const props = defineProps(['id'])
 
 watch(() => useEditor().getCurrentSection, () => {
   initFlowbite()
@@ -120,6 +124,59 @@ const tooltipStyle = computed(() => {
     top: `${top}px`
   };
 });
+
+if (props.id) {
+  const ws = new WebSocket(`${BACKEND_URL}/ws/frontend?identifier=${props.id}`);
+  useAppState().setIdentifier(props.id);
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({
+      socketCode: "WS_CHECK_SESSION",
+      identifier: props.id
+    }));
+
+    setInterval(() => ws.send("ping"), 20000);
+  }
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.socketCode === 'WS_VALID_SESSION') {
+      useToast().showToast('Session opened. Waiting for data', 2000, "success");
+      ws.send(JSON.stringify({
+        socketCode: "WS_GET_CONFIG",
+        identifier: props.id
+      }));
+    }
+
+    if (data.socketCode === 'WS_INVALID_SESSION') {
+      useToast().showToast('Invalid Session. Please try again', 2000, "error");
+    }
+
+    if (data.socketCode === 'WS_CONFIG_ERROR') {
+      useToast().showToast(data.message, 2000, 'error');
+    }
+
+    if (data.socketCode === 'WS_SEND_CONFIG') {
+      const dt = JSON.parse(data.message);
+      useAppState().setSplashScreen(false);
+      useEditor().setConfig(dt);
+      useEditor().setSocketConfig(true);
+      useEditor().setConfigLoaded(true);
+      useEditor().setCurrentSection(Object.keys(dt.config)[0]);
+      useToast().showToast('Success', 2000, "success");
+    }
+  }
+
+  ws.onclose = (event) => {
+    useEditor().setConfigLoaded(false);
+    useToast().showToast('Web Socket Connection Terminated', 2000, "error");
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 2000);
+  }
+
+}
 </script>
 
 <style>

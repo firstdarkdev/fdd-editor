@@ -76,6 +76,24 @@ export const addToArray = (target: any, key: any) => {
 
         target.push(mcDim);
     }
+
+    if (key === 'roleAdded') {
+        const roleAdded = {
+            discordRole: '',
+            minecraftCommand: []
+        }
+
+        target.push(roleAdded);
+    }
+
+    if (key === 'roleRemoved') {
+        const roleRemoved = {
+            discordRole: '',
+            minecraftCommand: []
+        }
+
+        target.push(roleRemoved);
+    }
 }
 
 export const headerToDisplay = (indentifier: any) => {

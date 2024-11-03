@@ -1,12 +1,14 @@
 import { useEditor } from '@/stores/editor'
 import { useToast } from '@/stores/toaststore'
+import { useAppState } from '@/stores/appstate'
 
 export const BACKEND_URL = import.meta.env.MODE === 'production' ? 'https://editor.firstdark.dev' : "http://localhost:3000";
 
 export const saveConfigFile = (download: boolean = false) => {
   const data = useEditor().getConfig
+  const isSocketConfig = useEditor().checkIsSocketConfig;
 
-  fetch(`${BACKEND_URL}/v1/saveconfig`, {
+  fetch(`${BACKEND_URL}/v1/saveconfig?isSocket=${isSocketConfig}&identifier=${useAppState().getIdentifier}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -20,13 +22,17 @@ export const saveConfigFile = (download: boolean = false) => {
       return;
     }
 
-    if (download) {
-      downloadFile(dt.data);
-    } else {
-      useEditor().setTomlConfig(dt.data);
-    }
+   if (!isSocketConfig) {
+     if (download) {
+       downloadFile(dt.data);
+     } else {
+       useEditor().setTomlConfig(dt.data);
+     }
+     useToast().showToast('Success', 3000, 'success');
+   } else {
+     useToast().showToast('Config sent to server', 3000, 'success');
+   }
 
-    useToast().showToast('Success', 3000, 'success');
   }).catch(err => {
     useToast().showToast(err, 3000, 'error');
   });

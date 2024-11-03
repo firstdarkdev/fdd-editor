@@ -7,6 +7,7 @@ export const useAppState = defineStore('editor-state', {
         codeEditor: false,
         theme: 'dark',
         showHoverTooltip: false,
+        identifier: '',
         toolTipData: {
             title: '',
             body: ''
@@ -22,6 +23,9 @@ export const useAppState = defineStore('editor-state', {
         },
         setTooltipData(payload: any) {
           this.toolTipData = payload;
+        },
+        setIdentifier(payload: string) {
+          this.identifier = payload;
         },
         toggleTheme() {
             this.theme = this.theme === 'dark' ? 'light' : 'dark';
@@ -50,6 +54,9 @@ export const useAppState = defineStore('editor-state', {
         },
         getToolTipDate(state) {
             return state.toolTipData
+        },
+        getIdentifier(state) {
+            return state.identifier;
         }
     }
 });

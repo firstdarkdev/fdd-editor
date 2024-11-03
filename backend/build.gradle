@@ -29,6 +29,7 @@ dependencies {
     shaded("com.fasterxml.jackson.core:jackson-databind:2.16.1")
     shaded "me.hypherionmc.moon-config:core:1.0.9"
     shaded "me.hypherionmc.moon-config:toml:1.0.9"
+    shaded("org.jasypt:jasypt:1.9.3:lite")
 
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'

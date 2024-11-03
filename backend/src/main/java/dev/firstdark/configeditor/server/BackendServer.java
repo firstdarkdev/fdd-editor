@@ -1,7 +1,6 @@
 package dev.firstdark.configeditor.server;
 
 import com.google.gson.JsonObject;
-import dev.firstdark.configeditor.Main;
 import dev.firstdark.configeditor.converter.ConfigConverter;
 import dev.firstdark.configeditor.server.responses.StandardResponse;
 import io.javalin.Javalin;
@@ -10,18 +9,13 @@ import io.javalin.http.UploadedFile;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JavalinGson;
 import io.javalin.plugin.bundled.CorsPluginConfig;
-import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.BOMInputStream;
-
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 
 import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
 
 public class BackendServer {
+
+    private final WebsocketServer websocketServer;
 
     public BackendServer(int port) {
         Javalin javalin = Javalin.create(config -> {
@@ -35,14 +29,23 @@ public class BackendServer {
            post("/saveconfig", this::handleSave);
         }));
 
+        websocketServer = new WebsocketServer(javalin);
+
         javalin.start(port);
     }
 
     private void handleSave(Context context) {
+        boolean isSocket = context.queryParam("isSocket") != null && context.queryParam("isSocket").equalsIgnoreCase("true");
+        String id = context.queryParam("identifier");
+
         try {
             JsonObject o = context.bodyAsClass(JsonObject.class);
             String config = ConfigConverter.INSTANCE.writeToToml(o);
             context.json(StandardResponse.success("Success", config));
+
+            if (isSocket) {
+                websocketServer.sendConfig(config, id);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             context.json(StandardResponse.error(e.getMessage()));

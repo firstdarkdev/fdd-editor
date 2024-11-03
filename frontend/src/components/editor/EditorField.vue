@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4 mt-2 items-center">
-    <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg relative w-full flex items-center" v-if="!(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('searchMode')))">
+    <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg relative w-full flex items-center" v-if="!(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('searchMode') || target[identifier].hasOwnProperty('minecraftCommand')))">
       <p style="min-width: 220px;" class="mr-5 relative" v-if="!Array.isArray(target)" @mouseenter="showTooltip(identifier, useEditor().getConfig.comments[useEditor().currentSection + '.' + identifier])" @mouseleave="useAppState().setHoverTooltip(false)">
         {{ headerToDisplay(props.identifier) }}
       </p>
@@ -221,6 +221,34 @@
           />
 
           <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('commands'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+            <FontAwesomeIcon :icon="faTrash" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('minecraftCommand')" class="grid grid-cols-3 w-full gap-2 items-center">
+      <div>
+        <p class="text-sm mb-1 pl-1">Role</p>
+        <input
+          type="text"
+          v-model="target[identifier].discordRole"
+          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+        />
+      </div>
+
+      <div>
+        <p class="text-sm mb-1 pl-1">Commands</p>
+        <div class="flex gap-1">
+          <v-select
+            class="min-w-64 textt w-full"
+            v-model="target[identifier].minecraftCommand"
+            multiple
+            taggable
+            :dropdown-should-open="noOpen"
+            push-tags
+          ></v-select>
+          <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('minecraftCommand'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
             <FontAwesomeIcon :icon="faTrash" />
           </button>
         </div>

@@ -20,7 +20,7 @@
         <FontAwesomeIcon :icon="faCode" />
       </a>
 
-      <a href="javascript:window.location.reload();" class="editor-button" title="Close Config">
+      <a href="javascript:window.location.href = '/';" class="editor-button" title="Close Config">
         <FontAwesomeIcon :icon="faPowerOff" />
       </a>
     </div>

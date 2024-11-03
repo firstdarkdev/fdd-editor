@@ -6,7 +6,8 @@ export const useEditor = defineStore('editor-editor', {
         currentSection: undefined,
         configData: undefined,
         savedConfig: false,
-        tomlConfig: ""
+        tomlConfig: "",
+        isSocketConfig: false,
     }),
 
     actions: {
@@ -18,6 +19,9 @@ export const useEditor = defineStore('editor-editor', {
         },
         setConfig(payload: any) {
             this.configData = payload;
+        },
+        setSocketConfig(payload: any) {
+            this.isSocketConfig = payload;
         },
         setTomlConfig(payload: any) {
             if (payload == undefined) {
@@ -45,6 +49,9 @@ export const useEditor = defineStore('editor-editor', {
         },
         hasSavedConfig(state) {
             return state.savedConfig;
+        },
+        checkIsSocketConfig(state) {
+            return state.isSocketConfig;
         }
     }
 });
