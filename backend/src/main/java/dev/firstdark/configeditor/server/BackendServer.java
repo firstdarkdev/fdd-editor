@@ -29,12 +29,19 @@ public class BackendServer {
         });
 
         javalin.get("/*", ctx -> {
-            String path = "web/index.html";
-            if (Files.exists(Paths.get(path))) {
-                ctx.contentType("text/html");
-                ctx.result(Files.newInputStream(Paths.get(path)));
+            String requestedPath = "web" + ctx.path();
+            Path path = Paths.get(requestedPath);
+            if (Files.exists(path) && !Files.isDirectory(path)) {
+                ctx.contentType(getMimeType(requestedPath));
+                ctx.result(Files.newInputStream(path));
             } else {
-                ctx.status(404).result("Index file not found");
+                String indexPath = "web/index.html";
+                if (Files.exists(Paths.get(indexPath))) {
+                    ctx.contentType("text/html");
+                    ctx.result(Files.newInputStream(Paths.get(indexPath)));
+                } else {
+                    ctx.status(404).result("Index file not found");
+                }
             }
         });
 
@@ -88,6 +95,16 @@ public class BackendServer {
             e.printStackTrace();
             context.json(StandardResponse.error("Failed to process file: " + e.getMessage()));
         }
+    }
+
+    private static String getMimeType(String filePath) {
+        if (filePath.endsWith(".js")) return "application/javascript";
+        if (filePath.endsWith(".css")) return "text/css";
+        if (filePath.endsWith(".html")) return "text/html";
+        if (filePath.endsWith(".png")) return "image/png";
+        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) return "image/jpeg";
+        // Add other file types as needed
+        return "application/octet-stream"; // Default MIME type
     }
 
 }
