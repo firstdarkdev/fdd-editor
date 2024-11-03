@@ -22,7 +22,7 @@ public class BackendServer {
             config.staticFiles.add("web", Location.EXTERNAL);
             config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
             config.jsonMapper(new JavalinGson());
-            //config.spaRoot.addFile("/", "web/index.html", Location.EXTERNAL);
+            config.spaRoot.addFile("/", "web/index.html", Location.EXTERNAL);
         });
 
         javalin.unsafeConfig().router.apiBuilder(() -> path("/v1", () -> {
