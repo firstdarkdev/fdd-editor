@@ -95,6 +95,15 @@ export const addToArray = (target: any, key: any) => {
 
         target.push(botStatus);
     }
+
+    if (key === 'syncs') {
+        const sync = {
+            rank: '',
+            role: ''
+        }
+
+        target.push(sync);
+    }
 }
 
 export const headerToDisplay = (indentifier: any) => {
