@@ -176,7 +176,8 @@
           { value: 'AVATAR', label: 'Avatar' },
           { value: 'HEAD', label: 'Player Head' },
           { value: 'BODY', label: 'Body' },
-          { value: 'COMBO', label: 'Combo' }
+          { value: 'COMBO', label: 'Combo' },
+          { value: 'CUSTOM', label: 'Custom'}
         ]"
       />
 
