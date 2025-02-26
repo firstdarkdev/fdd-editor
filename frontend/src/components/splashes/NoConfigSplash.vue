@@ -12,7 +12,7 @@
       </button>
       <br />
       <br />
-      <p class="text-yellow-500 dark:text-yellow-300 text-sm">Supports: <i>Simple RPC (3+), Simple Discord Link (3+) and Simple RPC Stardew Edition</i> configs</p>
+      <p class="text-yellow-500 dark:text-yellow-300 text-sm">Supports: <i>Simple RPC (3+), Simple RPC (4+), Simple Discord Link (3+) and Simple RPC Stardew Edition</i> configs</p>
     </div>
   </div>
 </template>

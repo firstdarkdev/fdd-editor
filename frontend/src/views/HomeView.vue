@@ -1,13 +1,21 @@
 <template>
   <div class="content-container" style="height: 100vh !important;" v-if="useEditor().isConfigLoaded" @mousemove="updateTooltipPosition">
     <div class="flex gap-4 items-center bg-ct-card-light dark:bg-ct-card-dark p-4 cursor-pointer overflow-x-auto" style="border-radius: 5px" v-if="useEditor().isConfigLoaded">
-      <p class="tab-key" @click="useEditor().setCurrentSection(key)" v-for="key in Object.keys(useEditor().getConfig.config as any)" :class="useEditor().getCurrentSection === key ? 'active_key' : ''">
+      <p
+        class="tab-key"
+        @click="useEditor().setCurrentSection(key)"
+        v-for="key in Object.keys(useEditor().getConfig.config as any)"
+        :class="useEditor().getCurrentSection === key ? 'active_key' : ''"
+      >
         {{ headerToDisplay(key) }}
       </p>
     </div>
 
     <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg mt-5 relative">
-      <h1 class="font-bold text-2xl">{{ headerToDisplay(useEditor().getCurrentSection) }} Config</h1>
+      <h1 class="font-bold text-2xl">
+        {{ headerToDisplay(useEditor().getCurrentSection) }} Config
+      </h1>
+
       <p
         v-if="useEditor().getCurrentSection === 'dimension_overrides'"
         class="plus_button"
@@ -18,12 +26,81 @@
 
       <div class="editor-body mt-10" v-if="useEditor().isConfigLoaded">
         <div v-for="(value, key) in useEditor().getConfig.config[useEditor().getCurrentSection]" >
-          <EditorField :key="key" :target="useEditor().getConfig.config[useEditor().currentSection]" :identifier="key" :value="value" v-if="typeof value !== 'object'" />
+          <EditorField
+            :key="key"
+            :target="useEditor().getConfig.config[useEditor().currentSection]"
+            :identifier="key"
+            :value="value"
+            v-if="typeof value !== 'object'"
+          />
 
           <div v-if="typeof value === 'object' && key as string !== 'dimensions'" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-            <h1 class="font-bold mb-4 underline">{{ headerToDisplay(key) }}</h1>
-            <p class="plus_button" @click="addToArray(useEditor().getConfig.config[useEditor().currentSection][key], key)" v-if="Array.isArray(useEditor().getConfig.config[useEditor().currentSection][key])"><FontAwesomeIcon :icon="faPlus" /></p>
-            <EditorField v-for="(vv, kk) in value" :key="kk" :target="useEditor().getConfig.config[useEditor().currentSection][key]" :identifier="kk" :value="vv" />
+            <h1 class="font-bold mb-4 underline">
+              {{ headerToDisplay(key) }}
+            </h1>
+
+            <p
+              class="plus_button"
+              @click="addToArray(useEditor().getConfig.config[useEditor().currentSection][key], key)"
+              v-if="Array.isArray(useEditor().getConfig.config[useEditor().currentSection][key])"
+            >
+              <FontAwesomeIcon :icon="faPlus" />
+            </p>
+
+            <EditorField
+              v-if="key !== 'presence'"
+              v-for="(vv, kk) in value"
+              :key="kk"
+              :target="useEditor().getConfig.config[useEditor().currentSection][key]"
+              :identifier="kk"
+              :value="vv"
+            />
+
+            <!-- === START PRESENCE EDITOR === -->
+            <div v-if="key == 'presence'">
+              <div v-for="(vv, kk) in value" style="margin-bottom: 10px;" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+                <h1 class="font-bold text-xl py-2"></h1>
+                <p
+                  class="plus_button"
+                  @click="deleteArrayEntry(useEditor().getConfig.config[useEditor().currentSection][key], kk)"
+                >
+                  <FontAwesomeIcon :icon="faTrashAlt" />
+                </p>
+
+                <div v-for="(subval, subkey) in vv">
+                  <EditorField
+                    v-if="typeof subval != 'object'"
+                    :key="subkey"
+                    :target="useEditor().getConfig.config[useEditor().currentSection][key][kk]"
+                    :identifier="subkey"
+                    :value="subval"
+                  />
+
+                  <div v-if="typeof subval === 'object'" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+                    <h1 class="font-bold mb-4 underline">
+                      {{ headerToDisplay(subkey) }}
+                    </h1>
+
+                    <p
+                      class="plus_button"
+                      @click="addToArray(useEditor().getConfig.config[useEditor().currentSection][key][kk][subkey], subkey)"
+                    >
+                      <FontAwesomeIcon :icon="faPlus" />
+                    </p>
+
+                    <EditorField
+                      v-for="(vvv, kkk) in subval"
+                      :key="kkk"
+                      :target="useEditor().getConfig.config[useEditor().currentSection][key][kk][subkey]"
+                      :identifier="kkk"
+                      :value="vvv"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- === END PRESENCE EDITOR === -->
+
           </div>
         </div>
 
@@ -60,12 +137,58 @@
                 </p>
 
                 <EditorField
+                  v-if="subkey != 'presence'"
                   v-for="(vv, kk) in subval"
                   :key="kk"
                   :target="useEditor().getConfig.config.dimension_overrides.dimensions[key][subkey]"
                   :identifier="kk"
                   :value="vv"
                 />
+
+                <!-- Presence Editor for Dimensions -->
+                <div v-if="subkey === 'presence'">
+                  <div v-for="(vv, kk) in subval" style="margin-bottom: 10px;" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+                    <h1 class="font-bold text-xl py-2"></h1>
+                    <p
+                      class="plus_button"
+                      @click="deleteArrayEntry(dimension[subkey], kk)"
+                    >
+                      <FontAwesomeIcon :icon="faTrashAlt" />
+                    </p>
+
+                    <div v-for="(subval2, subkey2) in vv">
+                      <EditorField
+                        v-if="typeof subval2 != 'object'"
+                        :key="subkey2"
+                        :target="dimension[subkey][kk]"
+                        :identifier="subkey2"
+                        :value="subval2"
+                      />
+
+                      <div v-if="typeof subval2 === 'object'" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+                        <h1 class="font-bold mb-4 underline">
+                          {{ headerToDisplay(subkey2) }}
+                        </h1>
+
+                        <p
+                          class="plus_button"
+                          @click="addToArray(dimension[subkey][kk][subkey2], subkey2)"
+                        >
+                          <FontAwesomeIcon :icon="faPlus" />
+                        </p>
+
+                        <EditorField
+                          v-for="(vvv, kkk) in subval2"
+                          :key="kkk"
+                          :target="dimension[subkey][kk][subkey2]"
+                          :identifier="kkk"
+                          :value="vvv"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>

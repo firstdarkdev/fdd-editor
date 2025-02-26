@@ -9,7 +9,7 @@
       <input
         type="text"
         :readonly="props.identifier === 'configVersion'"
-        v-if="typeof value === 'string' && identifier !== 'channel' && identifier !== 'playerAvatarType' && identifier !== 'botStatusType'"
+        v-if="typeof value === 'string' && identifier !== 'channel' && identifier !== 'playerAvatarType' && identifier !== 'botStatusType' && identifier !== 'type'"
         v-model="target[identifier]"
         class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
       />
@@ -31,6 +31,20 @@
       />
 
       <!-- =============== Simple RPC Specific  ================ -->
+
+      <CustomSelectControl
+        v-if="identifier === 'type'"
+        v-model="target[identifier]"
+        class="w-full"
+        :options="[
+          { value: 'PLAYING', label: 'Playing' },
+          { value: 'STREAMING', label: 'Streaming' },
+          { value: 'WATCHING', label: 'Watching' },
+          { value: 'LISTENING', label: 'Listening' },
+          { value: 'COMPETING', label: 'Competing'},
+          { value: 'CUSTOM_STATUS', label: 'Custom' }
+        ]"
+      />
 
       <!-- =============== Buttons ================ -->
       <div v-if="typeof target === 'object' && (target[identifier].hasOwnProperty('url'))" class="grid grid-cols-2 w-full gap-2 items-center">
@@ -181,7 +195,7 @@
         ]"
       />
 
-      <button v-if="Array.isArray(target) && !(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('url') || target[identifier].hasOwnProperty('Url')) || target[identifier].hasOwnProperty('value') || target[identifier].hasOwnProperty('Value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="ml-2 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+      <button v-if="Array.isArray(target) && !(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('largeImageKey') || target[identifier].hasOwnProperty('url') || target[identifier].hasOwnProperty('Url')) || target[identifier].hasOwnProperty('value') || target[identifier].hasOwnProperty('Value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="ml-2 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
         <FontAwesomeIcon :icon="faTrash" />
       </button>
     </div>

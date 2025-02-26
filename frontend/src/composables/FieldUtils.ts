@@ -1,3 +1,4 @@
+import { useEditor } from '@/stores/editor'
 
 export const addToArray = (target: any, key: any) => {
     if (key === 'permissions') {
@@ -63,18 +64,27 @@ export const addToArray = (target: any, key: any) => {
     }
 
     if (key === 'dimensions') {
-        const mcDim = {
-            name: '',
-            description: '',
-            state: '',
-            largeImageKey: [],
-            largeImageText: '',
-            smallImageKey: [],
-            smallImageText: '',
-            buttons: []
-        }
+        if (useEditor().getConfig.config.general.version < 25) {
+            const mcDim = {
+                name: '',
+                description: '',
+                state: '',
+                largeImageKey: [],
+                largeImageText: '',
+                smallImageKey: [],
+                smallImageText: '',
+                buttons: []
+            }
 
-        target.push(mcDim);
+            target.push(mcDim);
+        } else {
+            const mcDim = {
+                name: '',
+                presence: []
+            }
+
+            target.push(mcDim);
+        }
     }
 
     if (key === 'roleAdded' || key === 'roleRemoved') {
@@ -84,6 +94,22 @@ export const addToArray = (target: any, key: any) => {
         }
 
         target.push(roleAdded);
+    }
+
+    if (key === 'presence') {
+        const presence = {
+            type: "PLAYING",
+            description: "",
+            state: "",
+            largeImageKey: [],
+            largeImageText: "",
+            smallImageKey: [],
+            smallImageText: "",
+            streamingActivityUrl: "https://twitch.tv/twitch",
+            buttons: []
+        }
+
+        target.push(presence)
     }
 
     if (key === 'botStatus') {
