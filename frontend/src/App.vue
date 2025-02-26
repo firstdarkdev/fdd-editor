@@ -11,6 +11,7 @@ import {initFlowbite} from "flowbite";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons'
 import SavedConfigPopup from '@/components/editor/SavedConfigPopup.vue'
+import DownloadConfigPopup from '@/components/editor/DownloadConfigPopup.vue'
 
 onMounted(() => {
   initFlowbite();
@@ -28,6 +29,7 @@ const themeMode = computed(() => {
 <template>
   <Toast />
   <SavedConfigPopup />
+  <DownloadConfigPopup />
   <EditorHeader v-if="useEditor().isConfigLoaded" />
 
   <LoadingSplash v-if="useAppState().getSplashScreen" />

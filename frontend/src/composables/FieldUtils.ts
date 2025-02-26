@@ -12,7 +12,7 @@ export const addToArray = (target: any, key: any) => {
 
     if (key === 'requiredRoles' || key === 'deniedRoles' || key === 'ignoredCommands' || key === 'ignoredThreads'
       || key === 'largeImageKey' || key === 'smallImageKey' || key === 'allowedChannels') {
-        target.push('dummy')
+        target.push('')
     }
 
     if (key === 'entries') {

@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4 mt-2 items-center">
-    <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg relative w-full flex items-center" v-if="target[identifier] && !(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('searchMode') || target[identifier].hasOwnProperty('minecraftCommand')) || target[identifier].hasOwnProperty('botStatusType') || target[identifier].hasOwnProperty('rank'))">
+    <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg relative w-full flex items-center" v-if="!(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('searchMode') || target[identifier].hasOwnProperty('minecraftCommand')) || target[identifier].hasOwnProperty('botStatusType') || target[identifier].hasOwnProperty('rank'))">
       <p style="min-width: 220px;" class="mr-5 relative" v-if="!Array.isArray(target)" @mouseenter="showTooltip(identifier, useEditor().getConfig.comments[useEditor().currentSection + '.' + identifier])" @mouseleave="useAppState().setHoverTooltip(false)">
         {{ headerToDisplay(props.identifier) }}
       </p>
@@ -197,7 +197,7 @@
       </div>
 
       <div>
-        <p class="text-sm mb-1 pl-1">Commands</p>
+        <p class="text-sm mb-1 pl-1">Commands (Press enter to save)</p>
           <v-select
             class="min-w-64 textt w-full"
             v-model="target[identifier].commands"
@@ -266,7 +266,7 @@
       </div>
 
       <div>
-        <p class="text-sm mb-1 pl-1">Commands</p>
+        <p class="text-sm mb-1 pl-1">Commands (Press enter to save)</p>
         <div class="flex gap-1">
           <v-select
             class="min-w-64 textt w-full"

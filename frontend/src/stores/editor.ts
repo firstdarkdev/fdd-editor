@@ -8,6 +8,11 @@ export const useEditor = defineStore('editor-editor', {
         savedConfig: false,
         tomlConfig: "",
         isSocketConfig: false,
+        downloadConfig: {
+            original: '',
+            modified: '',
+            isSaved: false,
+        }
     }),
 
     actions: {
@@ -31,6 +36,13 @@ export const useEditor = defineStore('editor-editor', {
                 this.savedConfig = true;
                 this.tomlConfig = payload;
             }
+        },
+        setOriginalConfig(payload: string) {
+          this.downloadConfig.original = payload;
+        },
+        setDownloadConfig(payload: boolean, modified: string) {
+            this.downloadConfig.isSaved = payload;
+            this.downloadConfig.modified = modified;
         }
     },
 
@@ -52,6 +64,9 @@ export const useEditor = defineStore('editor-editor', {
         },
         checkIsSocketConfig(state) {
             return state.isSocketConfig;
+        },
+        hasDownloadConfig(state) {
+            return state.downloadConfig;
         }
     }
 });
