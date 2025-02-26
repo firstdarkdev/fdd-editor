@@ -9,6 +9,7 @@ import io.javalin.http.UploadedFile;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.json.JavalinGson;
 import io.javalin.plugin.bundled.CorsPluginConfig;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 
@@ -76,22 +77,12 @@ public class BackendServer {
         try {
             JsonObject o = ConfigConverter.INSTANCE.readToJson(f.content());
             o.addProperty("filename", f.filename());
+            o.addProperty("original", IOUtils.toString(f.content()));
             context.json(StandardResponse.success("Success", o));
         } catch (Exception e) {
             e.printStackTrace();
             context.json(StandardResponse.error("Failed to process file: " + e.getMessage()));
         }
-    }
-
-    private static String getMimeType(String filePath) {
-        if (filePath.endsWith(".js")) return "application/javascript";
-        if (filePath.endsWith(".css")) return "text/css";
-        if (filePath.endsWith(".html")) return "text/html";
-        if (filePath.endsWith(".png")) return "image/png";
-        if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) return "image/jpeg";
-        if (filePath.endsWith(".svg")) return "image/svg+xml";
-        // Add other file types as needed
-        return "application/octet-stream"; // Default MIME type
     }
 
 }

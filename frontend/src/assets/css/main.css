@@ -185,6 +185,14 @@
     border-radius: 10px;
 }
 
+.popup_dialog_small {
+    position: relative;
+    width: 600px;
+    min-height: 200px;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
 .cls_btn {
     position: absolute;
     right: 10px;

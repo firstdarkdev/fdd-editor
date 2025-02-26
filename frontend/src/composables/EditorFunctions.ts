@@ -24,7 +24,8 @@ export const saveConfigFile = (download: boolean = false) => {
 
    if (!isSocketConfig) {
      if (download) {
-       downloadFile(dt.data);
+       useEditor().setDownloadConfig(true, dt.data)
+       //downloadFile(dt.data);
      } else {
        useEditor().setTomlConfig(dt.data);
      }

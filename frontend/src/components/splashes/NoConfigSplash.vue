@@ -51,6 +51,7 @@ onChange((files) => {
 
       if (!dt.error) {
         useEditor().setConfig(dt.data);
+        useEditor().setOriginalConfig(dt.data.original);
         useEditor().setConfigLoaded(true);
         useEditor().setCurrentSection(Object.keys(dt.data.config)[0]);
         useToast().showToast('Success', 2000, "success");
