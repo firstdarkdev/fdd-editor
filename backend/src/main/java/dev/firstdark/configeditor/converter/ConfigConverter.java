@@ -124,7 +124,9 @@ public class ConfigConverter {
                     } else if(primitive.isNumber()) {
                         newConfig.add(key, primitive.getAsNumber());
                     } else if(primitive.isString()) {
-                        if (key.equalsIgnoreCase("applicationid")) {
+                        int configVersion = values.get("version") == null ? 0 : values.get("version").getAsInt();
+
+                        if (key.equalsIgnoreCase("applicationid") && configVersion < 24) {
                             newConfig.add(key, Long.parseLong(primitive.getAsString()));
                         } else {
                             newConfig.add(key, primitive.getAsString());
