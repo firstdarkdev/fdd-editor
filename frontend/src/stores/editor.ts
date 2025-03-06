@@ -7,7 +7,9 @@ export const useEditor = defineStore('editor-editor', {
         configData: undefined,
         savedConfig: false,
         tomlConfig: "",
+        embedJson: "",
         isSocketConfig: false,
+        isEmbedEditor: false,
         downloadConfig: {
             original: '',
             modified: '',
@@ -43,6 +45,9 @@ export const useEditor = defineStore('editor-editor', {
         setDownloadConfig(payload: boolean, modified: string) {
             this.downloadConfig.isSaved = payload;
             this.downloadConfig.modified = modified;
+        },
+        setEmbedEditor(payload: boolean) {
+            this.isEmbedEditor = payload;
         }
     },
 
@@ -67,6 +72,9 @@ export const useEditor = defineStore('editor-editor', {
         },
         hasDownloadConfig(state) {
             return state.downloadConfig;
+        },
+        getEmbedEditor(state) {
+            return state.isEmbedEditor
         }
     }
 });

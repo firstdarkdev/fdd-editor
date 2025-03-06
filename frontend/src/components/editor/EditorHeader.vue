@@ -12,11 +12,11 @@
         <FontAwesomeIcon :icon="faGithub" />
       </a>
 
-      <a @click="saveConfigFile(true)" href="javascript:void(0);" class="editor-button" title="Download Config">
+      <a v-if="!useEditor().getEmbedEditor" @click="saveConfigFile(true)" href="javascript:void(0);" class="editor-button" title="Download Config">
         <FontAwesomeIcon :icon="faSave" />
       </a>
 
-      <a @click="saveConfigFile()" href="javascript:void(0);" class="editor-button" title="View Config">
+      <a v-if="!useEditor().getEmbedEditor"  @click="saveConfigFile()" href="javascript:void(0);" class="editor-button" title="View Config">
         <FontAwesomeIcon :icon="faCode" />
       </a>
 
@@ -32,4 +32,5 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faEye, faFileAlt, faPowerOff, faQuestion, faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { saveConfigFile } from '@/composables/EditorFunctions'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { useEditor } from '@/stores/editor'
 </script>

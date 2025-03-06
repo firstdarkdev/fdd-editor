@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@discord-message-components/vue": "^0.2.1",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
@@ -22,7 +23,9 @@
     "@vueuse/core": "^10.9.0",
     "animate.css": "^4.1.1",
     "flowbite": "^2.3.0",
+    "flowbite-vue": "^0.1.9",
     "highlight.js": "^11.9.0",
+    "markdown-it": "^14.1.0",
     "pinia": "^2.1.7",
     "sweetalert2": "^11.11.0",
     "vue": "^3.4.21",
@@ -32,6 +35,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^20.12.5",
     "@types/vue-select": "^3.16.8",
     "@vitejs/plugin-vue": "^5.0.4",

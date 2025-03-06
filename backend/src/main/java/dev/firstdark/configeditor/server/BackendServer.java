@@ -12,6 +12,7 @@ import io.javalin.plugin.bundled.CorsPluginConfig;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
@@ -34,6 +35,7 @@ public class BackendServer {
 
         javalin.unsafeConfig().router.apiBuilder(() -> path("/v1", () -> {
            post("/parseupload", this::handleUpload);
+            post("/parseembed", this::handleEmbed);
            post("/saveconfig", this::handleSave);
         }));
 
@@ -79,6 +81,22 @@ public class BackendServer {
             o.addProperty("filename", f.filename());
             o.addProperty("original", IOUtils.toString(f.content()));
             context.json(StandardResponse.success("Success", o));
+        } catch (Exception e) {
+            e.printStackTrace();
+            context.json(StandardResponse.error("Failed to process file: " + e.getMessage()));
+        }
+    }
+
+    private void handleEmbed(Context context) {
+        UploadedFile f = context.uploadedFile("file");
+        if (f == null) {
+            context.json(StandardResponse.error("No uploaded file found"));
+            return;
+        }
+
+        try {
+            String data = IOUtils.toString(f.content(), StandardCharsets.UTF_8);
+            context.json(StandardResponse.success("Success", data));
         } catch (Exception e) {
             e.printStackTrace();
             context.json(StandardResponse.error("Failed to process file: " + e.getMessage()));

@@ -10,6 +10,10 @@
       <button type="button" @click="open()" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
         Select Config File
       </button>
+
+      <button type="button" @click="openEmbedEditor()" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+        Embed Editor
+      </button>
       <br />
       <br />
       <p class="text-yellow-500 dark:text-yellow-300 text-sm">Supports: <i>Simple RPC (3+), Simple RPC (4+), Simple Discord Link (3+) and Simple RPC Stardew Edition</i> configs</p>
@@ -23,6 +27,7 @@ import {useFileDialog} from "@vueuse/core";
 import {useEditor} from "@/stores/editor";
 import {useToast} from "@/stores/toaststore";
 import { BACKEND_URL } from '@/composables/EditorFunctions'
+import router from '@/router'
 
 onMounted(() => {
   document.body.addEventListener('dragover', evt => {
@@ -33,6 +38,12 @@ onMounted(() => {
     evt.preventDefault();
   });
 })
+
+const openEmbedEditor = () => {
+  router.push("/embed_editor").then(res => {
+    useEditor().setEmbedEditor(true);
+  })
+}
 
 const { open, onChange } = useFileDialog({
   accept: '.toml'

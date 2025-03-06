@@ -30,10 +30,10 @@ const themeMode = computed(() => {
   <Toast />
   <SavedConfigPopup />
   <DownloadConfigPopup />
-  <EditorHeader v-if="useEditor().isConfigLoaded" />
+  <EditorHeader v-if="useEditor().isConfigLoaded || useEditor().getEmbedEditor" />
 
-  <LoadingSplash v-if="useAppState().getSplashScreen" />
-  <NoConfigSplash v-if="!useEditor().isConfigLoaded" />
+  <LoadingSplash v-if="useAppState().getSplashScreen && !useEditor().getEmbedEditor" />
+  <NoConfigSplash v-if="!useEditor().isConfigLoaded && !useEditor().getEmbedEditor" />
   <RouterView />
 
   <div
