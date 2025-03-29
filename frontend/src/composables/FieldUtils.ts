@@ -17,7 +17,14 @@ export const addToArray = (target: any, key: any) => {
     }
 
     if (key === 'entries') {
-        const filterEntry = {
+        const filterEntry = useEditor().getConfig.config.general.configVersion > 26 ? {
+            search: "",
+            target: "CHAT",
+            replace: "",
+            searchMode: "CONTAINS",
+            action: "IGNORE",
+            ignoreConsole: false
+        } : {
             search: "",
             replace: "",
             searchMode: "CONTAINS",

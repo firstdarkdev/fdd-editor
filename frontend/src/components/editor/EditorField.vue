@@ -9,7 +9,7 @@
       <input
         type="text"
         :readonly="props.identifier === 'configVersion'"
-        v-if="typeof value === 'string' && identifier !== 'channel' && identifier !== 'playerAvatarType' && identifier !== 'botStatusType' && identifier !== 'type'"
+        v-if="typeof value === 'string' && identifier !== 'channel' && identifier !== 'playerAvatarType' && identifier !== 'botStatusType' && identifier !== 'type' && identifier !== 'advancementMessages' && !(identifier == 'deathMessages' && useEditor().getConfig.config.general.configVersion > 26)"
         v-model="target[identifier]"
         class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
       />
@@ -157,6 +157,17 @@
       </div>
 
       <!-- =============== Simple Discord Link Specific =================== -->
+      <CustomSelectControl
+        v-if="(identifier === 'advancementMessages' || identifier == 'deathMessages') && useEditor().getConfig.config.general.configVersion > 26"
+        v-model="target[identifier]"
+        class="w-full"
+        :options="[
+          { value: 'ALWAYS', label: 'Always' },
+          { value: 'NEVER', label: 'Never' },
+          { value: 'GAMERULE', label: 'Game Rule' }
+        ]"
+      />
+
       <CustomSelectControl
         v-if="identifier === 'channel'"
         v-model="target[identifier]"
@@ -340,7 +351,7 @@
 
     <!-- ======================= Message Filtering =================== -->
 
-    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('searchMode')" class="grid grid-cols-4 w-full gap-2 items-center">
+    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('searchMode')" class="grid grid-cols-4 w-full gap-2 items-center bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
       <div>
         <p class="text-sm mb-1 pl-1">Search</p>
         <input
@@ -359,17 +370,55 @@
         />
       </div>
 
+      <div v-if="useEditor().getConfig.config.general.configVersion > 26">
+        <p class="text-sm mb-1 pl-1">Target Mode</p>
+        <CustomSelectControl
+          v-model="target[identifier].target"
+          class="w-full"
+          :options="[
+            { value: 'USERNAME', label: 'Username' },
+            { value: 'CHAT', label: 'Chat' },
+            { value: 'BOTH', label: 'Both' }
+        ]"
+        />
+      </div>
+
       <div>
         <p class="text-sm mb-1 pl-1">Search Mode</p>
         <CustomSelectControl
           v-model="target[identifier].searchMode"
           class="w-full"
-          :options="[
+          :options="useEditor().getConfig.config.general.configVersion > 26 ? [
             { value: 'CONTAINS', label: 'Contains' },
             { value: 'STARTS_WITH', label: 'Starts With' },
-            { value: 'MATCHES', label: 'Exact Match' }
+            { value: 'MATCHES', label: 'Exact Match' },
+            { value: 'REGEX', label: 'Regex' }
+        ] : [
+            { value: 'CONTAINS', label: 'Contains' },
+            { value: 'STARTS_WITH', label: 'Starts With' },
+            { value: 'MATCHES', label: 'Exact Match' },
         ]"
         />
+      </div>
+
+      <div v-if="useEditor().getConfig.config.general.configVersion > 26">
+        <p class="text-sm mb-1 pl-1">Applies To</p>
+        <CustomSelectControl
+          v-model="target[identifier].searchMode"
+          class="w-full"
+          :options="[
+              { value: 'DISCORD', label: 'Discord' },
+              { value: 'MINECRAFT', label: 'Minecraft' },
+          ]"
+        />
+      </div>
+
+      <div v-if="useEditor().getConfig.config.general.configVersion > 26">
+        <p class="text-sm mb-1 pl-1">Ignore Console</p>
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" value="" class="sr-only peer" v-model="target[identifier].ignoreConsole">
+          <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
       </div>
 
       <div>
