@@ -1,8 +1,20 @@
 services:
+  editor_watchtower:
+    image: containrrr/watchtower
+    command:
+      - "--label-enable"
+      - "--interval"
+      - "30"
+      - "--rolling-restart"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   editorfrontend:
-    build: .
+    image: ghcr.io/firstdarkdev/fdd-editor:latest
     container_name: "editor_frontend"
     restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - fdd-docker
     ports:
