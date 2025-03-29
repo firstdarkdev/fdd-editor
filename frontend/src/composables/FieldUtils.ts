@@ -23,6 +23,7 @@ export const addToArray = (target: any, key: any) => {
             replace: "",
             searchMode: "CONTAINS",
             action: "IGNORE",
+            appliesTo: "DISCORD",
             ignoreConsole: false
         } : {
             search: "",

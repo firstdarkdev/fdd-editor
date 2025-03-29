@@ -404,7 +404,7 @@
       <div v-if="useEditor().getConfig.config.general.configVersion > 26">
         <p class="text-sm mb-1 pl-1">Applies To</p>
         <CustomSelectControl
-          v-model="target[identifier].searchMode"
+          v-model="target[identifier].appliesTo"
           class="w-full"
           :options="[
               { value: 'DISCORD', label: 'Discord' },
