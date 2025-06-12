@@ -378,6 +378,7 @@
           :options="[
             { value: 'USERNAME', label: 'Username' },
             { value: 'CHAT', label: 'Chat' },
+            { value: 'CONSOLE', label: 'Console' },
             { value: 'BOTH', label: 'Both' }
         ]"
         />
