@@ -95,7 +95,9 @@ public class ConfigConverter {
                                 tomlToJson(nestedConfig, nestedJson, comments, finalKey);
                                 stringArray.add(nestedJson);
                             } else {
-                                throw new RuntimeException(item + " is not a valid type");
+                                stringArray.add(new JsonPrimitive(String.valueOf(item)));
+                                newConfig.getOptionalComment(key).ifPresent(comment -> comments.put(finalKey, comment));
+                                //throw new RuntimeException(finalKey + " has an invalid value");
                             }
                         }
                         targetObject.add(key, stringArray);

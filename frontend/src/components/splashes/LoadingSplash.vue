@@ -4,7 +4,7 @@
     <img src="@/assets/img/config_editor_light.svg" class="block dark:hidden w-full" alt="logo" />
     <img src="@/assets/img/config_editor.svg" class="hidden dark:block w-full" alt="logo" />
     <br /><br />
-    <h4 data-text="Loading..." class="uppercase loading-animation">Loading...</h4>
+    <h4 data-text="Loading..." class="uppercase loading-animation font-extrabold">Loading...</h4>
     <br />
   </div>
 </div>
@@ -34,6 +34,7 @@ onMounted(() => {
   max-width: 7em;
   white-space: nowrap;
   animation: loading 5s linear;
+  color: gray;
 }
 @keyframes loading {
   0% {
