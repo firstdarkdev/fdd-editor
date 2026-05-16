@@ -11,6 +11,15 @@ export const addToArray = (target: any, key: any) => {
         target.push(mcCmd);
     }
 
+    if (key === 'entry') {
+      const overrideEntry = {
+        ip: "127.0.0.1",
+        presence: []
+      }
+
+      target.push(overrideEntry);
+    }
+
     if (key === 'requiredRoles' || key === 'deniedRoles' || key === 'ignoredCommands' || key === 'ignoredThreads'
       || key === 'largeImageKey' || key === 'smallImageKey' || key === 'allowedChannels' || key === 'verifiedRole') {
         target.push('')
@@ -162,6 +171,9 @@ const headerManual = (identifier: string) => {
   switch (identifier) {
     case 'ftbranks':
       return 'FTB Ranks';
+
+    case 'ip':
+      return "IP Address";
 
     case 'ftbessentials':
       return 'FTB Essentials';

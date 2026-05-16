@@ -32,6 +32,14 @@ public class ConfigConverter {
         JsonObject configJson = new JsonObject();
 
         tomlParser.parse(tomlContent, config, ParsingMode.ADD);
+
+        // Handling for Simple RPC Server Override Configs
+        if (isSimpleRpcOverride(config)) {
+            CommentedConfig newConfig = CommentedConfig.copy(config.unmodifiable());
+            config.clear();
+            config.add("general", newConfig);
+        }
+
         tomlToJson(config, configJson, comments, "");
 
         JsonObject finalObject = new JsonObject();
@@ -44,11 +52,29 @@ public class ConfigConverter {
     public String writeToToml(JsonObject configJson) {
         CommentedConfig config = CommentedConfig.inMemory();
         jsonToToml(config, configJson.getAsJsonObject("config"), "");
+        boolean isSimpleRpcOverride = isSimpleRpcOverride(config);
+
+        // Reverse handling for Simple RPC Server Override Configs
+        if (isSimpleRpcOverride) {
+            Object general = config.get("general");
+
+            if (general instanceof CommentedConfig generalConfig) {
+                CommentedConfig flattened = CommentedConfig.copy(generalConfig.unmodifiable());
+                config.clear();
+                flattened.valueMap().forEach(config::add);
+            }
+        }
 
         JsonObject comments = configJson.getAsJsonObject("comments");
         comments.entrySet().forEach(e -> {
+            String key = e.getKey();
+
+            if (isSimpleRpcOverride && key.startsWith("general.")) {
+                key = key.replace("general.", "");
+            }
+
             try {
-                config.setComment(e.getKey(), e.getValue().getAsString());
+                config.setComment(key, e.getValue().getAsString());
             } catch (Exception ignored) {}
         });
 
@@ -177,5 +203,17 @@ public class ConfigConverter {
                 }
             }
         });
+    }
+
+    private boolean isSimpleRpcOverride(CommentedConfig config) {
+        Object general = config.get("general");
+
+        if (!(general instanceof CommentedConfig generalConfig)) {
+            return false;
+        }
+
+        return generalConfig.get("enabled") != null
+                && generalConfig.get("version") != null
+                && generalConfig.get("entry") != null;
     }
 }
