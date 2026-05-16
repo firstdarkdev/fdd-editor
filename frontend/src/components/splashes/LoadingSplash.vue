@@ -1,23 +1,22 @@
 <template>
-<div class="absolute top-0 left-0 w-full h-full bg-ct-light-primary dark:bg-ct-dark-primary flex items-center justify-center text-black dark:text-white z-50">
-  <div class="text-center">
-    <img src="@/assets/img/config_editor_light.svg" class="block dark:hidden w-full" alt="logo" />
-    <img src="@/assets/img/config_editor.svg" class="hidden dark:block w-full" alt="logo" />
-    <br /><br />
-    <h4 data-text="Loading..." class="uppercase loading-animation font-extrabold">Loading...</h4>
-    <br />
+  <div class="absolute top-0 left-0 w-full h-full bg-ct-light-primary dark:bg-ct-dark-primary flex items-center justify-center text-black dark:text-white z-50">
+    <div class="text-center">
+      <AppLogo />
+      <br /><br />
+      <h4 data-text="Loading..." class="uppercase loading-animation font-extrabold">Loading...</h4>
+      <br />
+    </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">
 import {onMounted} from "vue";
-import {useAppState} from "@/stores/appstate";
+import {useAppState} from "../../stores/appstate.ts";
 
 onMounted(() => {
   setTimeout(() => {
     useAppState().setSplashScreen(false);
-  }, 3000);
+  }, 1000);
 })
 </script>
 

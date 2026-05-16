@@ -1,36 +1,44 @@
 <template>
-  <div class="w-full editorbar bg-ct-card-light dark:bg-ct-card-dark">
-    <div class="flex items-center">
-      <img src="@/assets/img/config_editor.svg" class="hidden dark:block" style="max-width: 300px;" alt="logo" />
-      <img src="@/assets/img/config_editor_light.svg" class="block dark:hidden" style="max-width: 300px;" alt="logo" />
-      <span class="ml-2 bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-green-400 border border-green-400">Alpha</span>
-    </div>
+  <div class="bg-default/75 backdrop-blur border-b border-default h-(--ui-header-height) sticky top-0 z-50 w-full">
+    <div class="flex items-center justify-between px-4 h-full">
+      <div>
+        <div class="flex items-center w-full" v-if="props.title == ''">
+          <AppLogo class="h-6 w-auto" />
+          <UBadge label="Beta" color="success" variant="subtle" class="ml-2" />
+        </div>
 
-    <div class="button-bar flex gap-1">
+        <h2 class="font-bold text-xl">{{ props.title }}</h2>
+      </div>
 
-      <a href="https://github.com/hypherionmc/fdd-editor" target="_blank" class="editor-button" title="Report Issue">
-        <FontAwesomeIcon :icon="faGithub" />
-      </a>
+      <div>
+        <UTooltip text="Report Issue on GitHub">
+          <UButton variant="ghost" color="neutral" to="https://github.com/hypherionmc/fdd-editor" target="_blank" icon="i-lucide-github" />
+        </UTooltip>
 
-      <a v-if="!useEditor().getEmbedEditor" @click="saveConfigFile(true)" href="javascript:void(0);" class="editor-button" title="Download Config">
-        <FontAwesomeIcon :icon="faSave" />
-      </a>
+        <DownloadConfigModal v-if="!useEditor().getEmbedEditor"  />
+        <SavedConfigPopup />
 
-      <a v-if="!useEditor().getEmbedEditor"  @click="saveConfigFile()" href="javascript:void(0);" class="editor-button" title="View Config">
-        <FontAwesomeIcon :icon="faCode" />
-      </a>
-
-      <a href="javascript:window.location.href = '/';" class="editor-button" title="Close Config">
-        <FontAwesomeIcon :icon="faPowerOff" />
-      </a>
+        <UTooltip text="Close Editor">
+          <UButton variant="ghost" color="neutral" icon="i-lucide-power" @click="pushReload()" />
+        </UTooltip>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faCode, faEye, faFileAlt, faPowerOff, faQuestion, faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
-import { saveConfigFile } from '@/composables/EditorFunctions'
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { useEditor } from '@/stores/editor'
+import {useEditor} from "../../stores/editor.ts";
+import DownloadConfigModal from "./DownloadConfigModal.vue";
+
+interface Props {
+  title?: string
+}
+
+const props = withDefaults(defineProps<Props>() ,{
+  title: ''
+})
+
+const pushReload = () => {
+  window.location.href = '/';
+}
 </script>

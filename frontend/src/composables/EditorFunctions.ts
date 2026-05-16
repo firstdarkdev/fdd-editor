@@ -1,8 +1,8 @@
-import { useEditor } from '@/stores/editor'
-import { useToast } from '@/stores/toaststore'
-import { useAppState } from '@/stores/appstate'
+import {useAppState} from "../stores/appstate.ts";
+import {useEditor} from "../stores/editor.ts";
 
 export const BACKEND_URL = import.meta.env.MODE === 'production' ? 'https://editor.firstdark.dev' : "http://localhost:3000";
+const toast = useToast()
 
 export const saveConfigFile = (download: boolean = false, isEmbed = false) => {
  if (isEmbed) {
@@ -21,24 +21,43 @@ export const saveConfigFile = (download: boolean = false, isEmbed = false) => {
      const dt = await res.json();
 
      if (dt.error) {
-       useToast().showToast(dt.message, 3000, 'error');
+       toast.add({
+         title: "Error",
+         description: dt.message,
+         color: "error",
+         duration: 2000
+       })
        return;
      }
 
      if (!isSocketConfig) {
        if (download) {
          useEditor().setDownloadConfig(true, dt.data)
-         //downloadFile(dt.data);
        } else {
          useEditor().setTomlConfig(dt.data);
        }
-       useToast().showToast('Success', 3000, 'success');
+       toast.add({
+         title: "Success",
+         description: "Config saved",
+         color: "success",
+         duration: 2000
+       })
      } else {
-       useToast().showToast('Config sent to server', 3000, 'success');
+       toast.add({
+         title: "Success",
+         description: "Config sent to server",
+         color: "success",
+         duration: 2000
+       })
      }
 
    }).catch(err => {
-     useToast().showToast(err, 3000, 'error');
+     toast.add({
+       title: "Error",
+       description: err,
+       color: "error",
+       duration: 2000
+     })
    });
  }
 }

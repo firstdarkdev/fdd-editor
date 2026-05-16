@@ -1,39 +1,72 @@
 <template>
-  <div class="z-10 popup flex items-center justify-center" v-if="useEditor().hasSavedConfig">
-    <div class="popup_dialog bg-ct-light-primary dark:bg-ct-dark-primary text-center p-4">
-      <FontAwesomeIcon :icon="faClose" class="cls_btn" @click="useEditor().setTomlConfig(undefined)" />
+ <UModal v-model:open="isOpen" :title="useEditor().getEmbedEditor ? 'Your new Embed' : 'Your new config'" :transition="true" :overlay="true">
+   <UTooltip text="View Config" v-if="!useEditor().getEmbedEditor">
+     <UButton variant="ghost" color="neutral" target="_blank" icon="i-lucide-code" @click="saveConfigFile()" />
+   </UTooltip>
 
-      <h1 class="font-bold text-xl">
-        {{ useEditor().getEmbedEditor ? "Your new Embed" : "Your new config" }}
-      </h1>
-      <p class="text-sm mb-4">Here is your new {{ useEditor().getEmbedEditor ? "embed" : "config" }}. Ready to copy and paste</p>
+   <template #description>
+     <p class="text-xs text-muted">Here is your new {{ useEditor().getEmbedEditor ? "embed" : "config" }}. Ready to copy and paste</p>
+   </template>
 
-      <highlightjs
-        v-if="!useEditor().getEmbedEditor"
-        language="toml"
-        :code="useEditor().tomlConfig"
-      />
+   <template #body>
+     <highlightjs
+       v-if="!useEditor().getEmbedEditor"
+       language="toml"
+       :code="useEditor().tomlConfig"
+     />
 
-      <highlightjs
-        v-if="useEditor().getEmbedEditor"
-        language="json"
-        :code="useEditor().embedJson"
-      />
-      <br />
-      <button type="button" @click="copyToClipboard" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Copy to Clipboard</button>
-      <button type="button" v-if="useEditor().isEmbedEditor" @click="downloadFile(useEditor().embedJson, true)" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Download</button>
-    </div>
-  </div>
+     <highlightjs
+       v-if="useEditor().getEmbedEditor"
+       language="json"
+       :code="useEditor().embedJson"
+     />
+   </template>
+
+   <template #footer>
+     <div class="flex items-center justify-end gap-2 w-full">
+       <UButton
+         variant="subtle"
+         @click="copyToClipboard"
+         size="lg"
+         color="info"
+         icon="i-lucide-copy"
+         label="Copy to Clipboard" />
+
+       <UButton
+         variant="subtle"
+         v-if="useEditor().isEmbedEditor"
+         size="lg"
+         @click="downloadFile(useEditor().embedJson, true)"
+         label="Download"
+         icon="i-lucide-download"
+       />
+     </div>
+   </template>
+ </UModal>
 </template>
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { useEditor } from '@/stores/editor.js'
-import { faClose } from '@fortawesome/free-solid-svg-icons'
-import { useToast } from '@/stores/toaststore'
-import { downloadFile } from '@/composables/EditorFunctions'
+import {useEditor} from "../../stores/editor.ts";
+import {downloadFile, saveConfigFile} from "../../composables/EditorFunctions.ts";
+import {useToast} from "@nuxt/ui/composables";
+import {computed} from "vue";
+
+const toast = useToast()
+
+const isOpen = computed({
+  get: () => useEditor().hasSavedConfig,
+
+  set: (value) => {
+    if (!value)
+      useEditor().setTomlConfig(undefined)
+  }
+})
 
 const copyToClipboard = async () => {
   await navigator.clipboard.writeText(useEditor().isEmbedEditor ? useEditor().embedJson : useEditor().getTomlConfig)
-  useToast().showToast('Copied to Clipboard', 3000, 'info');
+  toast.add({
+    title: 'Copied to clipboard',
+    color: 'info',
+    duration: 2000
+  })
 }
 </script>

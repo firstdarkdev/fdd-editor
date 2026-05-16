@@ -1,143 +1,147 @@
 <template>
-  <div class="content-container" style="height: 100vh !important;" v-if="useEditor().isConfigLoaded || useEditor().getEmbedEditor">
+  <EditorHeader />
+
+  <div class="content-container mt-5" style="min-height: 100vh !important;" v-if="useEditor().isConfigLoaded || useEditor().getEmbedEditor">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+      <div class="ct-card p-4 mt-2 mb-2 rounded-lg relative">
 
         <div class="flex items-center justify-between mb-5">
           <h2 class="font-bold text-2xl">Simple Discord Link - Embed Editor</h2>
-          <button type="button" @click="open()" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-2 py-1.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"> Load</button>
+          <UButton label="Load" variant="subtle" color="info" icon="i-lucide-hard-drive-upload" @click="open()" />
         </div>
 
         <div>
 
-          <Collapse collapse-title="Author" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+          <Collapse collapse-title="Author" class="ct-card p-4 mt-2 mb-2 rounded-lg relative">
             <div>
               <div class="w-full mt-2">
-                <h2>Author Name</h2>
-                <input type="text" placeholder="Author Name" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="authorName" />
+                <h2 class="text-sm">Author Name</h2>
+                <UInput placeholder="Author Name" v-model="authorName" variant="subtle" class="w-full" />
               </div>
 
               <div class="grid grid-cols-2 gap-2 mt-2">
                 <div class="w-full">
-                  <h2>Author Icon</h2>
-                  <input type="url" placeholder="Author Icon" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="authorIcon" />
+                  <h2 class="text-sm">Author Icon</h2>
+                  <UInput placeholder="Author Icon URL" type="url" v-model="authorIcon" variant="subtle" class="w-full" />
                 </div>
 
                 <div>
-                  <h2>Author URL</h2>
-                  <input type="url" placeholder="Author URL" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="authorUrl" />
+                  <h2 class="text-sm">Author URL</h2>
+                  <UInput placeholder="Author URL" type="url" v-model="authorUrl" variant="subtle" class="w-full" />
                 </div>
               </div>
 
             </div>
           </Collapse>
 
-          <Collapse collapse-title="Body" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+          <Collapse collapse-title="Body" class="ct-card p-4 mt-2 mb-2 rounded-lg relative">
             <div class="w-full mt-2">
-              <h2>Title</h2>
-              <input type="text" placeholder="Title" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="embedTitle" />
+              <h2 class="text-sm">Title</h2>
+              <UInput placeholder="Title" v-model="embedTitle" variant="subtle" class="w-full" />
             </div>
 
             <div class="w-full mt-2">
-              <h2>Body</h2>
-              <textarea id="message" rows="4" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Write your thoughts here..." v-model="embedBody"></textarea>
+              <h2 class="text-sm">Body</h2>
+              <UTextarea :rows="4" variant="subtle" placeholder="The body of the embed" class="w-full" v-model="embedBody" />
             </div>
 
             <div class="grid grid-cols-2 gap-2 mt-2">
               <div class="w-full">
-                <h2>Title URL</h2>
-                <input type="url" placeholder="Title URL" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="embedUrl" />
+                <h2 class="text-sm">Title URL</h2>
+                <UInput placeholder="Title URL" type="url" v-model="embedUrl" variant="subtle" class="w-full" />
               </div>
 
               <div>
-                <h2>Color</h2>
-                <div>
-                  <div class="flex">
-                    <input type="url" placeholder="Title URL" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="embedColor" />
-                    <input type="color" placeholder="Color" class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="embedColor" />
-                  </div>
-                </div>
+                <h2 class="text-sm">Color</h2>
+                <UPopover>
+                  <UInput placeholder="Color" type="text" v-model="embedColor" variant="subtle" class="w-full">
+                    <template #leading>
+                      <span :style="chip" class="size-3 rounded-full" />
+                    </template>
+                  </UInput>
+
+                  <template #content>
+                    <UColorPicker v-model="embedColor" class="p-2" />
+                  </template>
+                </UPopover>
               </div>
             </div>
 
           </Collapse>
 
-          <Collapse collapse-title="Images" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+          <Collapse collapse-title="Images" class="ct-card p-4 mt-2 mb-2 rounded-lg relative">
             <div class="w-full mt-2">
-              <h2>Thumbnail</h2>
-              <input type="url" placeholder="Thumbnail URL" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="embedThumbnail" />
+              <h2 class="text-sm">Thumbnail</h2>
+              <UInput placeholder="Thumbnail URL" type="url" v-model="embedThumbnail" variant="subtle" class="w-full" />
             </div>
 
             <div class="w-full mt-2">
-              <h2>Image</h2>
-              <input type="url" placeholder="Image URL" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="embedImage" />
+              <h2 class="text-sm">Image</h2>
+              <UInput placeholder="Image URL" type="url" v-model="embedImage" variant="subtle" class="w-full" />
             </div>
 
           </Collapse>
 
-          <Collapse collapse-title="Footer" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+          <Collapse collapse-title="Footer" class="ct-card p-4 mt-2 mb-2 rounded-lg relative">
             <div>
               <div class="w-full mt-2">
-                <h2>Footer Text</h2>
-                <input type="text" placeholder="Footer Text" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="footerText" />
+                <h2 class="text-sm">Footer Text</h2>
+                <UInput placeholder="Footer Text" v-model="footerText" variant="subtle" class="w-full" />
               </div>
 
-              <div class="grid grid-cols-2 gap-2 mt-2">
+              <div class="grid grid-cols-2 gap-2 mt-2 items-center">
                 <div class="w-full">
-                  <h2>Footer Icon</h2>
-                  <input type="url" placeholder="Footer Icon URL" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="footerIconUrl" />
+                  <h2 class="text-sm">Footer Icon</h2>
+                  <UInput placeholder="Footer Icon URL" type="url" v-model="footerIconUrl" variant="subtle" class="w-full" />
                 </div>
 
                 <div>
-                  <h2>Add Timestamp</h2>
-                  <fwb-toggle v-model="discordTimestamp" />
+                  <h2 class="text-sm">Add Timestamp</h2>
+                  <USwitch v-model="discordTimestamp" />
                 </div>
               </div>
 
             </div>
           </Collapse>
 
-          <Collapse collapse-title="Fields" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
+          <Collapse collapse-title="Fields" class="ct-card p-4 mt-2 mb-2 rounded-lg relative">
             <template #button>
-              <FontAwesomeIcon :icon="faPlus" class="cursor-pointer" @click="addField()" />
+              <UIcon name="i-lucide-plus" class="cursor-pointer" @click="addField()" />
             </template>
 
-            <div v-for="(field, index) in embedFields" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-              <div class="flex items-center justify-between border-b py-2">
+            <div v-for="(field, index) in embedFields" class="ct-card p-4 mt-2 mb-2 rounded-lg relative">
+              <div class="flex items-center justify-between border-b border-b-muted py-2">
                 <h1>Field {{ index + 1 }}</h1>
-                <FontAwesomeIcon :icon="faTrash" class="color-danger-500 cursor-pointer" @click="deleteField(index)" />
+                <UButton variant="ghost" color="error" icon="i-lucide-trash" size="sm" @click="deleteField(index)" />
               </div>
 
-              <div class="flex items-center gap-2">
+              <div class="flex items-end gap-2">
                 <div class="w-full mt-2">
-                  <h2>Title</h2>
-                  <input type="text" placeholder="Title" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" v-model="field.name" />
+                  <h2 class="text-sm">Title</h2>
+                  <UInput placeholder="Title" v-model="field.name" variant="subtle" class="w-full" />
                 </div>
 
-                <div>
-                  <h2>Inline</h2>
-                  <fwb-toggle v-model="field.inline" />
-                </div>
+                <USwitch v-model="field.inline" label="Inline" />
               </div>
 
               <div class="mt-2">
-                <h2>Value</h2>
-                <textarea id="message" rows="4" class="w-full border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Write your thoughts here..." v-model="field.text"></textarea>
+                <h2 class="text-sm">Value</h2>
+                <UTextarea :rows="4" variant="subtle" placeholder="The value of the field" class="w-full" v-model="field.text" />
               </div>
             </div>
           </Collapse>
 
-          <div class="p-4 rounded-lg relative">
-            <div class="flex items-center justify-end gap-2">
-              <button type="button" @click="reloadWindow()" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Reset</button>
-              <button type="button" @click="generateEmbed()" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Download</button>
+          <div class="rounded-lg relative py-4">
+            <div class="flex items-center justify-between gap-2">
+              <UButton label="Reset" color="error" variant="subtle" icon="i-lucide-undo-2" @click="reloadWindow()" />
+              <UButton label="Download" color="success" variant="subtle" icon="i-lucide-download" @click="generateEmbed()" />
             </div>
           </div>
 
         </div>
       </div>
 
-      <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative" :class="useAppState().getSavedThemeMode == 'light' ? 'discord-light-theme' : ''">
+      <div class="ct-card p-4 mt-2 mb-2 rounded-lg relative" :class="colorMode == 'light' ? 'discord-light-theme' : ''">
         <DiscordMessage author="Simple Discord Link" avatar="blue" :bot="true" compactMode="false">
           <DiscordEmbed
             slot="embeds"
@@ -169,25 +173,21 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useEditor } from '@/stores/editor'
-import { nextTick, onMounted, reactive, ref } from 'vue'
+import {computed, onMounted, reactive, ref} from 'vue'
 import { DiscordEmbed, DiscordEmbedField, DiscordEmbedFields, DiscordMessage } from '@discord-message-components/vue'
-import Collapse from '@/components/editor/Collapse.vue'
 import markdownit from 'markdown-it'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { initFlowbite } from 'flowbite'
-import { useFileDialog } from '@vueuse/core'
-import { BACKEND_URL, downloadFile, saveConfigFile } from '@/composables/EditorFunctions'
-import { useToast } from '@/stores/toaststore'
-import { FwbToggle, FwbInput } from 'flowbite-vue'
-import { useAppState } from '@/stores/appstate'
+import {useColorMode, useFileDialog} from '@vueuse/core'
+import {BACKEND_URL, saveConfigFile} from "../composables/EditorFunctions.ts";
+import {useEditor} from "../stores/editor.ts";
+import {useToast} from "@nuxt/ui/composables";
 
 const md = markdownit({
   html: true,
   linkify: true,
   typographer: true
 })
+
+const toast = useToast()
 
 const placeholders = "1) `%author%` -> The name of the Player/Server. For example: `HypherionSA`\n" +
   "2) `%avatar%` -> The player/server avatar link\n" +
@@ -230,12 +230,12 @@ const embedFields = reactive<embedField[]>([])
 
 const parsePlaceholders = (data: string | undefined) => {
   if (!data)
-    return undefined;
+    return "";
 
   data = data.replace("%author%", "HypherionSA");
-  data = data.replace("%avatar%", "https://mc-heads.net/head/c973a5eb-2012-46ff-9eed-1767b5ccba71/512")
+  data = data.replace("%avatar%", "https://skinatar.firstdark.dev/head/c973a5eb-2012-46ff-9eed-1767b5ccba71")
   data = data.replace("%message_contents%", "Hello Minecraft people! How are you today?")
-  data = data.replace("%player_avatar%", "https://mc-heads.net/head/c973a5eb-2012-46ff-9eed-1767b5ccba71/512")
+  data = data.replace("%player_avatar%", "https://skinatar.firstdark.dev/head/c973a5eb-2012-46ff-9eed-1767b5ccba71")
   data = data.replace("%player_name%", "TheRealHypherionSA")
   data = data.replace("%current_time%", "TBD")
   data = data.replace("%username%", "server")
@@ -249,9 +249,6 @@ const addField = async () => {
     text: "Body",
     inline: true
   })
-
-  await nextTick();
-  initFlowbite();
 }
 
 const deleteField = (index: number) => {
@@ -314,7 +311,6 @@ const generateEmbed = () => {
 }
 
 onMounted(() => {
-  initFlowbite()
   useEditor().setEmbedEditor(true)
 })
 
@@ -365,12 +361,27 @@ onChange((files) => {
 
         // TODO Timestamp
 
-        useToast().showToast('Success', 2000, "success");
+        toast.add({
+          title: "Success",
+          description: "Embed has been loaded",
+          color: "success",
+          duration: 2000,
+        })
       } else {
-        useToast().showToast(dt.message, 2000, "error");
+        toast.add({
+          title: "Error",
+          description: dt.message,
+          color: "error",
+          duration: 2000,
+        })
       }
     }).catch(err => {
-      useToast().showToast(err, 2000, "error");
+      toast.add({
+        title: "Error",
+        description: err,
+        color: "error",
+        duration: 2000,
+      })
     })
   }
 })
@@ -378,6 +389,9 @@ onChange((files) => {
 const reloadWindow = () => {
   window.location.reload()
 }
+
+const chip = computed(() => ({ backgroundColor: embedColor.value }))
+const colorMode = useColorMode()
 </script>
 
 <style lang="css">

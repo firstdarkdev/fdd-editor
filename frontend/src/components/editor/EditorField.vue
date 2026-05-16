@@ -1,486 +1,261 @@
 <template>
-  <div class="flex gap-4 mt-2 items-center">
-    <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg relative w-full flex items-center" v-if="!(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('searchMode') || target[identifier].hasOwnProperty('minecraftCommand')) || target[identifier].hasOwnProperty('botStatusType') || target[identifier].hasOwnProperty('rank'))">
-      <p style="min-width: 220px;" class="mr-5 relative" v-if="!Array.isArray(target)" @mouseenter="showTooltip(identifier, useEditor().getConfig.comments[useEditor().currentSection + '.' + identifier])" @mouseleave="useAppState().setHoverTooltip(false)">
-        {{ headerToDisplay(props.identifier) }}
-      </p>
+  <UPageCard :orientation="isEmptyOrNull(props.identifier) ? 'vertical' : 'horizontal'" variant="soft" :ui="{ wrapper: isEmptyOrNull(props.identifier) ? 'hidden' : 'block' }">
+    <template #title>
+      <h1 class="text-base text-pretty font-semibold text-highlighted">{{ headerToDisplay(props.identifier) }}</h1>
+    </template>
 
+    <template #description>
+      <p class="text-xs text-muted">{{ useEditor().getConfig.comments[props.commentkey] }}</p>
+    </template>
+
+    <div class="w-full flex items-center" v-if="!(hasProp('commands') || hasProp('searchMode') || hasProp('minecraftCommand') || hasProp('botStatusType') || hasProp('rank'))">
       <!-- ============= Text Input ============ -->
-      <input
-        type="text"
-        :readonly="props.identifier === 'configVersion'"
-        v-if="typeof value === 'string' && identifier !== 'channel' && identifier !== 'playerAvatarType' && identifier !== 'botStatusType' && identifier !== 'type' && identifier !== 'advancementMessages' && !(identifier == 'deathMessages' && useEditor().getConfig.config.general.configVersion > 26)"
-        v-model="target[identifier]"
-        class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+      <UInput :disabled="(props.identifier === 'configVersion')"
+        v-if="isStringField"
+        v-model="field"
+        variant="subtle"
+        size="lg"
+        class="w-full"
+      />
+
+      <!-- ============ String Arrays ============= -->
+      <UInputTags
+        v-if="isStringArray(identifier)"
+        v-model="field"
+        variant="subtle"
+        size="lg"
+        class="w-full"
+        placeholder="Press enter to save"
       />
 
       <!-- ============ Boolean ============= -->
-      <label class="inline-flex items-center cursor-pointer" v-if="typeof value == 'boolean'">
-        <input type="checkbox" value="" class="sr-only peer" v-model="target[identifier]">
-        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-      </label>
+      <USwitch
+        v-if="typeof value == 'boolean'"
+        size="lg"
+        color="info"
+        v-model="field"
+      />
 
       <!-- ========== Number ============= -->
-      <input
-        type="number"
+      <UInputNumber
         :disabled="props.identifier === 'configVersion' || props.identifier === 'version'"
         v-if="typeof value === 'number'"
-        v-model="target[identifier]"
-        aria-describedby="helper-text-explanation"
-        class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-      />
-
-      <!-- =============== Simple RPC Specific  ================ -->
-
-      <CustomSelectControl
-        v-if="identifier === 'type'"
-        v-model="target[identifier]"
+        v-model="field"
+        variant="subtle"
         class="w-full"
-        :options="[
-          { value: 'PLAYING', label: 'Playing' },
-          { value: 'STREAMING', label: 'Streaming' },
-          { value: 'WATCHING', label: 'Watching' },
-          { value: 'LISTENING', label: 'Listening' },
-          { value: 'COMPETING', label: 'Competing'},
-          { value: 'CUSTOM_STATUS', label: 'Custom' }
-        ]"
+        size="lg"
       />
 
-      <!-- =============== Buttons ================ -->
-      <div v-if="typeof target === 'object' && (target[identifier].hasOwnProperty('url'))" class="grid grid-cols-2 w-full gap-2 items-center">
-        <div>
-          <p class="text-sm mb-1 pl-1">Button Title</p>
-          <input
-            type="text"
-            v-model="target[identifier].label"
-            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <div>
-          <p class="text-sm mb-1 pl-1">Button URL</p>
-          <div class="flex gap-1">
-            <input
-              type="text"
-              v-model="target[identifier].url"
-              aria-describedby="helper-text-explanation"
-              class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-            />
-
-            <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('url'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-              <FontAwesomeIcon :icon="faTrash" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="typeof target === 'object' && (target[identifier].hasOwnProperty('Url'))" class="grid grid-cols-2 w-full gap-2 items-center">
-        <div>
-          <p class="text-sm mb-1 pl-1">Button Title</p>
-          <input
-            type="text"
-            v-model="target[identifier].Title"
-            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <div>
-          <p class="text-sm mb-1 pl-1">Button URL</p>
-          <div class="flex gap-1">
-            <input
-              type="text"
-              v-model="target[identifier].Url"
-              aria-describedby="helper-text-explanation"
-              class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-            />
-
-            <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('Url'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-              <FontAwesomeIcon :icon="faTrash" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- =============== Variables ================ -->
-      <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('value')" class="grid grid-cols-2 w-full gap-2 items-center">
-        <div>
-          <p class="text-sm mb-1 pl-1">Variable</p>
-          <input
-            type="text"
-            v-model="target[identifier].name"
-            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <div>
-          <p class="text-sm mb-1 pl-1">Value</p>
-          <div class="flex gap-1">
-            <input
-              type="text"
-              v-model="target[identifier].value"
-              aria-describedby="helper-text-explanation"
-              class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-            />
-
-            <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-              <FontAwesomeIcon :icon="faTrash" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('Value')" class="grid grid-cols-2 w-full gap-2 items-center">
-        <div>
-          <p class="text-sm mb-1 pl-1">Variable</p>
-          <input
-            type="text"
-            v-model="target[identifier].Name"
-            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-        </div>
-
-        <div>
-          <p class="text-sm mb-1 pl-1">Value</p>
-          <div class="flex gap-1">
-            <input
-              type="text"
-              v-model="target[identifier].Value"
-              aria-describedby="helper-text-explanation"
-              class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-            />
-
-            <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('Value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-              <FontAwesomeIcon :icon="faTrash" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- =============== Simple Discord Link Specific =================== -->
-      <CustomSelectControl
-        v-if="(identifier === 'advancementMessages' || identifier == 'deathMessages') && useEditor().getConfig.config.general.configVersion > 26"
-        v-model="target[identifier]"
+      <!-- =============== Select Field ================ -->
+      <USelect
+        v-if="selectField"
+        variant="subtle"
+        size="lg"
+        v-model="field"
         class="w-full"
-        :options="[
-          { value: 'ALWAYS', label: 'Always' },
-          { value: 'NEVER', label: 'Never' },
-          { value: 'GAMERULE', label: 'Game Rule' }
-        ]"
+        :items="selectField"
       />
 
-      <CustomSelectControl
-        v-if="identifier === 'channel'"
-        v-model="target[identifier]"
-        class="w-full"
-        :options="[
-          { value: 'CHAT', label: 'Chat' },
-          { value: 'EVENT', label: 'Events' },
-          { value: 'CONSOLE', label: 'Console' },
-          { value: 'OVERRIDE', label: 'Override' }
-        ]"
+      <!-- =============== Simple RPC Buttons ================ -->
+      <RPCButtonField
+        v-if="hasProp('url') || hasProp('Url')"
+        v-model="field"
+        @delete="deleteArrayEntry(target, identifier)"
       />
 
-      <CustomSelectControl
-        v-if="identifier === 'botStatusType'"
-        v-model="target[identifier]"
-        class="w-full"
-        :options="[
-          { value: 'PLAYING', label: 'Playing' },
-          { value: 'STREAMING', label: 'Streaming' },
-          { value: 'WATCHING', label: 'Watching' },
-          { value: 'LISTENING', label: 'Listening' },
-          { value: 'CUSTOM_STATUS', label: 'Custom' }
-        ]"
+      <!-- =============== Simple RPC Variables ================ -->
+      <RPCVariableField
+        v-if="hasProp('value') || hasProp('Value')"
+        v-model="field"
+        @delete="deleteArrayEntry(target, identifier)"
       />
-
-      <CustomSelectControl
-        v-if="identifier === 'playerAvatarType'"
-        v-model="target[identifier]"
-        class="w-full"
-        :options="[
-          { value: 'AVATAR', label: 'Avatar' },
-          { value: 'HEAD', label: 'Player Head' },
-          { value: 'BODY', label: 'Body' },
-          { value: 'COMBO', label: 'Combo' },
-          { value: 'CUSTOM', label: 'Custom'}
-        ]"
-      />
-
-      <button v-if="Array.isArray(target) && !(typeof target === 'object' && (target[identifier].hasOwnProperty('commands') || target[identifier].hasOwnProperty('largeImageKey') || target[identifier].hasOwnProperty('url') || target[identifier].hasOwnProperty('Url')) || target[identifier].hasOwnProperty('value') || target[identifier].hasOwnProperty('Value'))" @click="deleteArrayEntry(target, identifier)" type="button" class="ml-2 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-        <FontAwesomeIcon :icon="faTrash" />
-      </button>
     </div>
 
-    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('commands')" class="grid grid-cols-3 w-full gap-2 items-center">
-      <div>
-        <p class="text-sm mb-1 pl-1">Role</p>
-        <input
-          type="text"
-          v-model="target[identifier].role"
-          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-        />
-      </div>
+    <!-- =============== Simple Discord Link Linked Commands ================ -->
+    <SDLCommand
+      v-if="hasProp('commands')"
+      v-model="field"
+      @delete="deleteArrayEntry(target, identifier)"
+    />
 
-      <div>
-        <p class="text-sm mb-1 pl-1">Commands (Press enter to save)</p>
-          <v-select
-            class="min-w-64 textt w-full"
-            v-model="target[identifier].commands"
-            multiple
-            taggable
-            :dropdown-should-open="noOpen"
-            push-tags
-          ></v-select>
-      </div>
+    <!-- =============== Simple Discord Link Rank ================ -->
+    <SDLRank
+      v-if="hasProp('rank')"
+      v-model="field"
+      @delete="deleteArrayEntry(target, identifier)"
+    />
 
-      <div>
-        <p class="text-sm mb-1 pl-1">Permission Level</p>
-        <div class="flex gap-1">
-          <input
-            type="number"
-            v-model="target[identifier].permissionLevel"
-            aria-describedby="helper-text-explanation"
-            max="4"
-            min="1"
-            @change="limitLevel"
-            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
+    <!-- =============== Simple Discord Link Trigger Commands ================ -->
+    <SDLLinkedCommand
+      v-if="hasProp('minecraftCommand')"
+      v-model="field"
+      @delete="deleteArrayEntry(target, identifier)"
+    />
 
-          <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('commands'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-            <FontAwesomeIcon :icon="faTrash" />
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- =============== Simple Discord Link Bot Status ================ -->
+    <SDLBotStatus
+      v-if="hasProp('botStatusType')"
+      v-model="field"
+      @delete="deleteArrayEntry(target, identifier)"
+      :items="BOT_STATUS_TYPE"
+    />
 
-    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('rank')" class="grid grid-cols-3 w-full gap-2 items-center">
-      <div>
-        <p class="text-sm mb-1 pl-1">Rank/Group</p>
-        <input
-          type="text"
-          v-model="target[identifier].rank"
-          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-        />
-      </div>
+    <!-- ========== Simple Discord Link Message Filtering ========== -->
+    <MessageFilterField
+      v-if="hasProp('searchMode')"
+      v-model="field"
+      :applies-items="APPLIES_TO"
+      :search-items="SEARCH_MODE_OPTIONS"
+      :filter-items="FILTER_TARGET_MODE"
+      :replace-items="REPLACE_MODE"
+      @delete="deleteArrayEntry(target, identifier)"
+    />
 
-      <div>
-        <p class="text-sm mb-1 pl-1">Discord Role</p>
-        <input
-          type="text"
-          v-model="target[identifier].role"
-          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-        />
-      </div>
-
-      <div>
-        <p></p>
-        <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('rank'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-          <FontAwesomeIcon :icon="faTrash" />
-        </button>
-      </div>
-    </div>
-
-    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('minecraftCommand')" class="grid grid-cols-3 w-full gap-2 items-center">
-      <div>
-        <p class="text-sm mb-1 pl-1">Role</p>
-        <input
-          type="text"
-          v-model="target[identifier].discordRole"
-          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-        />
-      </div>
-
-      <div>
-        <p class="text-sm mb-1 pl-1">Commands (Press enter to save)</p>
-        <div class="flex gap-1">
-          <v-select
-            class="min-w-64 textt w-full"
-            v-model="target[identifier].minecraftCommand"
-            multiple
-            taggable
-            :dropdown-should-open="noOpen"
-            push-tags
-          ></v-select>
-          <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('minecraftCommand'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-            <FontAwesomeIcon :icon="faTrash" />
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('botStatusType')" class="grid grid-cols-3 w-full gap-2 items-center">
-      <div>
-        <p class="text-sm mb-1 pl-1">Status</p>
-        <input
-          type="text"
-          v-model="target[identifier].status"
-          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-        />
-      </div>
-
-      <div>
-        <p class="text-sm mb-1 pl-1">Status Type</p>
-        <CustomSelectControl
-          v-model="target[identifier].botStatusType"
-          class="w-full"
-          :options="[
-          { value: 'PLAYING', label: 'Playing' },
-          { value: 'STREAMING', label: 'Streaming' },
-          { value: 'WATCHING', label: 'Watching' },
-          { value: 'LISTENING', label: 'Listening' },
-          { value: 'CUSTOM_STATUS', label: 'Custom' }
-        ]"
-        />
-      </div>
-
-      <div>
-        <p class="text-sm mb-1 pl-1">Bot Status Streaming URL</p>
-        <div class="flex gap-1">
-          <input
-            type="text"
-            v-model="target[identifier].botStatusStreamingURL"
-            class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-          />
-
-          <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('botStatusStreamingURL'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-            <FontAwesomeIcon :icon="faTrash" />
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======================= Message Filtering =================== -->
-
-    <div v-if="typeof target === 'object' && target[identifier].hasOwnProperty('searchMode')" class="grid grid-cols-4 w-full gap-2 items-center bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-      <div>
-        <p class="text-sm mb-1 pl-1">Search</p>
-        <input
-          type="text"
-          v-model="target[identifier].search"
-          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-        />
-      </div>
-
-      <div>
-        <p class="text-sm mb-1 pl-1">Replace</p>
-        <input
-          type="text"
-          v-model="target[identifier].replace"
-          class="border text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full bg-ct-light-secondary dark:bg-ct-dark-secondary border-ct-card dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-        />
-      </div>
-
-      <div v-if="useEditor().getConfig.config.general.configVersion > 26">
-        <p class="text-sm mb-1 pl-1">Target Mode</p>
-        <CustomSelectControl
-          v-model="target[identifier].target"
-          class="w-full"
-          :options="[
-            { value: 'USERNAME', label: 'Username' },
-            { value: 'CHAT', label: 'Chat' },
-            { value: 'CONSOLE', label: 'Console' },
-            { value: 'BOTH', label: 'Both' }
-        ]"
-        />
-      </div>
-
-      <div>
-        <p class="text-sm mb-1 pl-1">Search Mode</p>
-        <CustomSelectControl
-          v-model="target[identifier].searchMode"
-          class="w-full"
-          :options="useEditor().getConfig.config.general.configVersion > 26 ? [
-            { value: 'CONTAINS', label: 'Contains' },
-            { value: 'STARTS_WITH', label: 'Starts With' },
-            { value: 'MATCHES', label: 'Exact Match' },
-            { value: 'REGEX', label: 'Regex' }
-        ] : [
-            { value: 'CONTAINS', label: 'Contains' },
-            { value: 'STARTS_WITH', label: 'Starts With' },
-            { value: 'MATCHES', label: 'Exact Match' },
-        ]"
-        />
-      </div>
-
-      <div v-if="useEditor().getConfig.config.general.configVersion > 26">
-        <p class="text-sm mb-1 pl-1">Applies To</p>
-        <CustomSelectControl
-          v-model="target[identifier].appliesTo"
-          class="w-full"
-          :options="[
-              { value: 'DISCORD', label: 'Discord' },
-              { value: 'MINECRAFT', label: 'Minecraft' },
-          ]"
-        />
-      </div>
-
-      <div v-if="useEditor().getConfig.config.general.configVersion > 26">
-        <p class="text-sm mb-1 pl-1">Ignore Console</p>
-        <label class="inline-flex items-center cursor-pointer">
-          <input type="checkbox" value="" class="sr-only peer" v-model="target[identifier].ignoreConsole">
-          <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-        </label>
-      </div>
-
-      <div>
-        <p class="text-sm mb-1 pl-1">Action</p>
-        <div class="flex gap-1">
-          <CustomSelectControl
-            v-model="target[identifier].action"
-            class="w-full"
-            :options="[
-              { value: 'REPLACE', label: 'Replace' },
-              { value: 'IGNORE', label: 'Ignore Message' }
-          ]"
-          />
-
-          <button v-if="Array.isArray(target) && (typeof target === 'object' && target[identifier].hasOwnProperty('searchMode'))" @click="deleteArrayEntry(target, identifier)" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-            <FontAwesomeIcon :icon="faTrash" />
-          </button>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  </UPageCard>
 </template>
 
 <script setup lang="ts">
-import {initFlowbite} from "flowbite";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {faTrash} from "@fortawesome/free-solid-svg-icons";
-import { headerToDisplay } from '@/composables/FieldUtils'
-import CustomSelectControl from '@/components/editor/CustomSelectControl.vue'
-import { useEditor } from '@/stores/editor'
-import { useAppState } from '@/stores/appstate'
+import {useEditor} from "../../stores/editor.ts";
+import {headerToDisplay, isEmptyOrNull, isStringArray} from "../../composables/FieldUtils.ts";
+import {computed} from "vue";
+import SDLCommand from "./controls/SDLCommand.vue";
+import SDLRank from "./controls/SDLRank.vue";
+import SDLLinkedCommand from "./controls/SDLLinkedCommand.vue";
+import SDLBotStatus from "./controls/SDLBotStatus.vue";
+import MessageFilterField from "./controls/MessageFilterField.vue";
 
-const props = defineProps(['identifier', 'value', 'target']);
-initFlowbite();
+const props = defineProps([
+  'identifier',
+  'value',
+  'target',
+  'commentkey'
+]);
 
-const showTooltip = (title: any, data: any) => {
-  if (data) {
-    useAppState().setTooltipData({
-      title: title,
-      body: data
-    })
-    useAppState().setHoverTooltip(true);
+const RPC_ACTIVITY_TYPE = [
+  { value: 'PLAYING', label: 'Playing' },
+  { value: 'STREAMING', label: 'Streaming' },
+  { value: 'WATCHING', label: 'Watching' },
+  { value: 'LISTENING', label: 'Listening' },
+  { value: 'COMPETING', label: 'Competing'},
+  { value: 'CUSTOM_STATUS', label: 'Custom' }
+]
+
+const TRI_BOOLEAN = [
+  { value: 'ALWAYS', label: 'Always' },
+  { value: 'NEVER', label: 'Never' },
+  { value: 'GAMERULE', label: 'Game Rule' }
+]
+
+const CHANNEL_OVERRIDE = [
+  { value: 'CHAT', label: 'Chat' },
+  { value: 'EVENT', label: 'Events' },
+  { value: 'CONSOLE', label: 'Console' },
+  { value: 'OVERRIDE', label: 'Override' }
+]
+
+const BOT_ONLINE_STATUS = [
+  { value: 'ONLINE', label: 'Online' },
+  { value: 'IDLE', label: 'Idle' },
+  { value: 'DO_NOT_DISTURB', label: 'Do Not Disturb' },
+  { value: 'OFFLINE', label: 'Offline' }
+]
+
+const BOT_STATUS_TYPE = [
+  { value: 'PLAYING', label: 'Playing' },
+  { value: 'STREAMING', label: 'Streaming' },
+  { value: 'WATCHING', label: 'Watching' },
+  { value: 'LISTENING', label: 'Listening' },
+  { value: 'CUSTOM_STATUS', label: 'Custom' }
+]
+
+const AVATAR_TYPE = [
+  { value: 'AVATAR', label: 'Avatar' },
+  { value: 'HEAD', label: 'Player Head' },
+  { value: 'BODY', label: 'Body' },
+  { value: 'COMBO', label: 'Combo' },
+  { value: 'CUSTOM', label: 'Custom'}
+]
+
+const FILTER_TARGET_MODE = [
+  { value: 'USERNAME', label: 'Username' },
+  { value: 'CHAT', label: 'Chat' },
+  { value: 'CONSOLE', label: 'Console' },
+  { value: 'BOTH', label: 'Both' }
+]
+
+const APPLIES_TO = [
+  { value: 'DISCORD', label: 'Discord' },
+  { value: 'MINECRAFT', label: 'Minecraft' },
+]
+
+const REPLACE_MODE = [
+  { value: 'REPLACE', label: 'Replace' },
+  { value: 'IGNORE', label: 'Ignore Message' }
+]
+
+const SEARCH_MODE_OPTIONS = computed(() => {
+  if (useEditor().getConfig.config.general.configVersion > 26) {
+    return [
+      { value: 'CONTAINS', label: 'Contains' },
+      { value: 'STARTS_WITH', label: 'Starts With' },
+      { value: 'MATCHES', label: 'Exact Match' },
+      { value: 'REGEX', label: 'Regex' }
+    ]
   }
+
+  return [
+    { value: 'CONTAINS', label: 'Contains' },
+    { value: 'STARTS_WITH', label: 'Starts With' },
+    { value: 'MATCHES', label: 'Exact Match' }
+  ]
+})
+
+const selectField = computed(() => {
+  switch (props.identifier) {
+    case 'type':
+      return RPC_ACTIVITY_TYPE
+
+    case 'botStatusType':
+      return BOT_STATUS_TYPE
+
+    case 'advancementMessages':
+    case 'deathMessages':
+      return useEditor().getConfig.config.general.configVersion > 26 ? TRI_BOOLEAN : null
+
+    case 'channel':
+      return CHANNEL_OVERRIDE
+
+    case 'playerAvatarType':
+      return AVATAR_TYPE
+
+    case 'maintenanceOnlineStatus':
+      return BOT_ONLINE_STATUS
+
+    default:
+      return null
+  }
+})
+
+const isStringField = computed(() => {
+  return typeof props.value === 'string' && !selectField.value
+})
+
+const isObjectField = computed(() => {
+  return typeof field.value === 'object' && field.value !== null
+})
+
+const hasProp = (prop: string) => {
+  return isObjectField.value && Object.prototype.hasOwnProperty.call(field.value, prop)
 }
 
-const limitLevel = () => {
-    if (props.target[props.identifier].permissionLevel > 4) {
-      props.target[props.identifier].permissionLevel = 4;
-    }
-
-    if (props.target[props.identifier].permissionLevel < 1) {
-      props.target[props.identifier].permissionLevel = 1;
-    }
-}
+const field = computed({
+  get: () => props.target?.[props.identifier],
+  set: (value) => {
+    props.target[props.identifier] = value
+  }
+})
 
 const deleteArrayEntry = (target: any, index: any) => {
     target.splice(index, 1);
-}
-
-const noOpen = () => {
-  return false;
 }
 </script>

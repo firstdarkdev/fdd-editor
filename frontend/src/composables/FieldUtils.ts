@@ -1,4 +1,4 @@
-import { useEditor } from '@/stores/editor'
+import {useEditor} from "../stores/editor.ts";
 
 export const addToArray = (target: any, key: any) => {
     if (key === 'permissions') {
@@ -35,7 +35,7 @@ export const addToArray = (target: any, key: any) => {
         target.push(filterEntry);
     }
 
-    if (key === 'buttons') {
+    if (key === 'buttons' && target.length < 2) {
         const mcButton = {
             label: "",
             url: ""
@@ -44,7 +44,7 @@ export const addToArray = (target: any, key: any) => {
         target.push(mcButton);
     }
 
-    if (key === 'Buttons') {
+    if (key === 'Buttons' && target.length < 2) {
         const stardewButton = {
             Title: "",
             Url: ""
@@ -140,12 +140,81 @@ export const addToArray = (target: any, key: any) => {
     }
 }
 
-export const headerToDisplay = (indentifier: any) => {
-    if (indentifier === undefined)
+export const headerToDisplay = (identifier: string) => {
+    if (!identifier)
         return '';
 
-    const words = indentifier.match(/([A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+)/g) || [];
+    if (typeof identifier !== 'string')
+      return '';
+
+    const tempIdent = headerManual(identifier);
+
+    if (tempIdent != identifier)
+      return tempIdent;
+
+    const words = identifier.match(/([A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+)/g) || [];
     // @ts-ignore
     const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
     return capitalizedWords.join(' ');
+}
+
+const headerManual = (identifier: string) => {
+  switch (identifier) {
+    case 'ftbranks':
+      return 'FTB Ranks';
+
+    case 'ftbessentials':
+      return 'FTB Essentials';
+
+    case 'cobblemonguilds':
+      return 'Cobblemon Guilds';
+
+    case 'ftbteams_chat':
+      return 'FTB Teams Chat';
+
+    case 'mcPrefix':
+      return 'Minecraft Prefix';
+
+    case 'mcReplyFormatting':
+      return "Minecraft Reply Formatting"
+
+    case 'playerroles':
+      return 'Player Roles';
+
+    case 'luckperms':
+      return 'LuckPerms';
+
+    case 'rpcImageServer':
+      return 'RPC Image Server';
+
+    case 'rpcImageServerUrl':
+      return 'RPC Image Server URL';
+
+    default:
+      return identifier;
+  }
+}
+
+export const isInvalidField = (value: unknown) => {
+  const invalidFields = ['configVersion']
+  return value != null && invalidFields.includes(value as string);
+}
+
+export const isStringArray = (value: unknown) => {
+  const stringArrays = [
+    'ignoredThreads',
+    'ignoredCommands',
+    'requiredRoles',
+    'deniedRoles',
+    'verifiedRole',
+    'allowedChannels',
+    'largeImageKey',
+    'smallImageKey'
+  ]
+
+  return value != null && stringArrays.includes(value as string);
+}
+
+export const isEmptyOrNull = (value: unknown) => {
+  return value == null || value === '' || typeof value === 'number';
 }

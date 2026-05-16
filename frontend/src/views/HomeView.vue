@@ -1,252 +1,52 @@
 <template>
-  <div class="content-container" style="height: 100vh !important;" v-if="useEditor().isConfigLoaded" @mousemove="updateTooltipPosition">
-    <div class="flex gap-4 items-center bg-ct-card-light dark:bg-ct-card-dark p-4 cursor-pointer overflow-x-auto" style="border-radius: 5px" v-if="useEditor().isConfigLoaded">
-      <p
-        class="tab-key"
-        @click="useEditor().setCurrentSection(key)"
-        v-for="key in Object.keys(useEditor().getConfig.config as any)"
-        :class="useEditor().getCurrentSection === key ? 'active_key' : ''"
-      >
-        {{ headerToDisplay(key) }}
-      </p>
-    </div>
+  <div class="flex flex-1">
+    <USidebar variant="sidebar" v-if="useEditor().isConfigLoaded">
+      <template #title>
+       <div class="flex items-center gap-2">
+         <AppLogo />
+         <UBadge variant="subtle" size="sm" color="success" label="Beta" />
+       </div>
+      </template>
 
-    <div class="bg-ct-card-light dark:bg-ct-card-dark p-4 rounded-lg mt-5 relative">
-      <h1 class="font-bold text-2xl">
-        {{ headerToDisplay(useEditor().getCurrentSection) }} Config
-      </h1>
-
-      <p
-        v-if="useEditor().getCurrentSection === 'dimension_overrides'"
-        class="plus_button"
-        @click="addToArray(useEditor().getConfig.config.dimension_overrides.dimensions, 'dimensions')"
-      >
-        <FontAwesomeIcon :icon="faPlus" />
-      </p>
-
-      <div class="editor-body mt-10" v-if="useEditor().isConfigLoaded">
-        <div v-for="(value, key) in useEditor().getConfig.config[useEditor().getCurrentSection]" >
-          <EditorField
-            :key="key"
-            :target="useEditor().getConfig.config[useEditor().currentSection]"
-            :identifier="key"
-            :value="value"
-            v-if="typeof value !== 'object'"
-          />
-
-          <div v-if="typeof value === 'object' && key as string !== 'dimensions'" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-            <h1 class="font-bold mb-4 underline">
-              {{ headerToDisplay(key) }}
-            </h1>
-
-            <p
-              class="plus_button"
-              @click="addToArray(useEditor().getConfig.config[useEditor().currentSection][key], key)"
-              v-if="Array.isArray(useEditor().getConfig.config[useEditor().currentSection][key])"
-            >
-              <FontAwesomeIcon :icon="faPlus" />
-            </p>
-
-            <EditorField
-              v-if="key !== 'presence'"
-              v-for="(vv, kk) in value"
-              :key="kk"
-              :target="useEditor().getConfig.config[useEditor().currentSection][key]"
-              :identifier="kk"
-              :value="vv"
-            />
-
-            <!-- === START PRESENCE EDITOR === -->
-            <div v-if="key == 'presence'">
-              <div v-for="(vv, kk) in value" style="margin-bottom: 10px;" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-                <h1 class="font-bold text-xl py-2"></h1>
-                <p
-                  class="plus_button"
-                  @click="deleteArrayEntry(useEditor().getConfig.config[useEditor().currentSection][key], kk)"
-                >
-                  <FontAwesomeIcon :icon="faTrashAlt" />
-                </p>
-
-                <div v-for="(subval, subkey) in vv">
-                  <EditorField
-                    v-if="typeof subval != 'object'"
-                    :key="subkey"
-                    :target="useEditor().getConfig.config[useEditor().currentSection][key][kk]"
-                    :identifier="subkey"
-                    :value="subval"
-                  />
-
-                  <div v-if="typeof subval === 'object'" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-                    <h1 class="font-bold mb-4 underline">
-                      {{ headerToDisplay(subkey) }}
-                    </h1>
-
-                    <p
-                      class="plus_button"
-                      @click="addToArray(useEditor().getConfig.config[useEditor().currentSection][key][kk][subkey], subkey)"
-                    >
-                      <FontAwesomeIcon :icon="faPlus" />
-                    </p>
-
-                    <EditorField
-                      v-for="(vvv, kkk) in subval"
-                      :key="kkk"
-                      :target="useEditor().getConfig.config[useEditor().currentSection][key][kk][subkey]"
-                      :identifier="kkk"
-                      :value="vvv"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- === END PRESENCE EDITOR === -->
-
-          </div>
-        </div>
-
-        <!-- === Dimension Overrides Controls === -->
-        <div v-if="useEditor().isConfigLoaded && useEditor().currentSection === 'dimension_overrides'">
-
-          <div v-for="(dimension, key) in useEditor().getConfig.config.dimension_overrides.dimensions" style="margin-bottom: 10px;" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-            <h1 class="font-bold text-xl">
-              {{ headerToDisplay(useEditor().getConfig.config.dimension_overrides.dimensions[key].name) || 'No Name' }}
-            </h1>
-            <p
-              class="plus_button"
-              @click="deleteArrayEntry(useEditor().getConfig.config.dimension_overrides.dimensions, key)"
-            >
-              <FontAwesomeIcon :icon="faTrashAlt" />
-            </p>
-
-            <div v-for="(subval, subkey) in useEditor().getConfig.config.dimension_overrides.dimensions[key]">
-              <EditorField
-                :key="subkey"
-                v-if="typeof subval !== 'object'"
-                :identifier="subkey"
-                :value="subval"
-                :target="useEditor().getConfig.config.dimension_overrides.dimensions[key]"
-              />
-
-              <div v-if="typeof subval === 'object'" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-                <h1 class="font-bold mb-4 underline">{{ headerToDisplay(subkey) }}</h1>
-                <p
-                  class="plus_button"
-                  @click="addToArray(useEditor().getConfig.config.dimension_overrides.dimensions[key][subkey], subkey)"
-                >
-                  <FontAwesomeIcon :icon="faPlus" />
-                </p>
-
-                <EditorField
-                  v-if="subkey != 'presence'"
-                  v-for="(vv, kk) in subval"
-                  :key="kk"
-                  :target="useEditor().getConfig.config.dimension_overrides.dimensions[key][subkey]"
-                  :identifier="kk"
-                  :value="vv"
-                />
-
-                <!-- Presence Editor for Dimensions -->
-                <div v-if="subkey === 'presence'">
-                  <div v-for="(vv, kk) in subval" style="margin-bottom: 10px;" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-                    <h1 class="font-bold text-xl py-2"></h1>
-                    <p
-                      class="plus_button"
-                      @click="deleteArrayEntry(dimension[subkey], kk)"
-                    >
-                      <FontAwesomeIcon :icon="faTrashAlt" />
-                    </p>
-
-                    <div v-for="(subval2, subkey2) in vv">
-                      <EditorField
-                        v-if="typeof subval2 != 'object'"
-                        :key="subkey2"
-                        :target="dimension[subkey][kk]"
-                        :identifier="subkey2"
-                        :value="subval2"
-                      />
-
-                      <div v-if="typeof subval2 === 'object'" class="bg-ct-card-light dark:bg-ct-card-dark p-4 mt-2 mb-2 rounded-lg relative">
-                        <h1 class="font-bold mb-4 underline">
-                          {{ headerToDisplay(subkey2) }}
-                        </h1>
-
-                        <p
-                          class="plus_button"
-                          @click="addToArray(dimension[subkey][kk][subkey2], subkey2)"
-                        >
-                          <FontAwesomeIcon :icon="faPlus" />
-                        </p>
-
-                        <EditorField
-                          v-for="(vvv, kkk) in subval2"
-                          :key="kkk"
-                          :target="dimension[subkey][kk][subkey2]"
-                          :identifier="kkk"
-                          :value="vvv"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-        </div>
-        <!-- === End Dimension Overrides Controls === -->
+      <div class="flex flex-col cursor-pointer overflow-x-auto" v-if="useEditor().isConfigLoaded">
+        <UButton
+          variant="link"
+          :color="useEditor().getCurrentSection === key ? 'info' : 'neutral'"
+          v-for="key in Object.keys(useEditor().getConfig.config as any).filter(k => !isInvalidField(k))"
+          :label="headerToDisplay(key)"
+          @click="useEditor().setCurrentSection(key)"
+        />
       </div>
-    </div>
+    </USidebar>
 
-    <div class="mctooltip text-white" :style="tooltipStyle" v-if="useAppState().shouldShowTooltip">
-      <div class="mctooltip-inner">
-        <p class="title">{{ useAppState().getToolTipDate.title }}</p>
-        <p class="downloads">{{ useAppState().getToolTipDate.body }}</p>
+    <div class="flex-1 flex flex-col w-full">
+      <EditorHeader :title="sectionTitle" v-if="useEditor().isConfigLoaded || useEditor().getEmbedEditor" class="w-full" />
+
+      <div class="content-container" v-if="useEditor().isConfigLoaded">
+        <div class="rounded-lg relative">
+          <div class="editor-body mt-5 flex gap-2 flex-col">
+            <ConfigNodeEditor
+              :value="useEditor().getConfig.config[useEditor().currentSection]"
+              :comments="useEditor().getConfig.comments"
+              :path="[useEditor().currentSection]"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {useEditor} from "@/stores/editor";
-import EditorField from "@/components/editor/EditorField.vue";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
-import { addToArray, headerToDisplay } from '@/composables/FieldUtils'
-import { initFlowbite } from 'flowbite'
-import { computed, ref, watch } from 'vue'
-import { useAppState } from '@/stores/appstate'
-import { BACKEND_URL } from '@/composables/EditorFunctions'
-import { useToast } from '@/stores/toaststore'
+import { computed } from 'vue'
+import {useAppState} from "../stores/appstate.ts";
+import {useEditor} from "../stores/editor.ts";
+import {BACKEND_URL} from "../composables/EditorFunctions.ts";
+import {headerToDisplay, isInvalidField} from "../composables/FieldUtils.ts";
+import {useToast} from "@nuxt/ui/composables";
 
 const props = defineProps(['id'])
-
-watch(() => useEditor().getCurrentSection, () => {
-  initFlowbite()
-})
-
-const deleteArrayEntry = (target: any, index: any) => {
-  target.splice(index, 1);
-}
-
-const tooltipPosition = ref({ x: 0, y: 0 });
-
-const updateTooltipPosition = (e: MouseEvent) => {
-  tooltipPosition.value = {
-    x: e.pageX - window.scrollX,
-    y: e.pageY
-  };
-};
-
-const tooltipStyle = computed(() => {
-  let left = tooltipPosition.value.x;
-  let top = tooltipPosition.value.y + 10;
-
-  return {
-    left: `${left}px`,
-    top: `${top}px`
-  };
-});
+const toast = useToast()
 
 if (props.id) {
   const ws = new WebSocket(`${BACKEND_URL}/ws/frontend?identifier=${props.id}`);
@@ -265,7 +65,13 @@ if (props.id) {
     const data = JSON.parse(event.data);
 
     if (data.socketCode === 'WS_VALID_SESSION') {
-      useToast().showToast('Session opened. Waiting for data', 2000, "success");
+      toast.add({
+        title: "Success",
+        description: "Session opened. Waiting for data",
+        color: 'success',
+        duration: 2000
+      })
+
       ws.send(JSON.stringify({
         socketCode: "WS_GET_CONFIG",
         identifier: props.id
@@ -273,11 +79,21 @@ if (props.id) {
     }
 
     if (data.socketCode === 'WS_INVALID_SESSION') {
-      useToast().showToast('Invalid Session. Please try again', 2000, "error");
+      toast.add({
+        title: 'Error',
+        description: "Invalid Session. Please try again",
+        duration: 2000,
+        color: "error"
+      })
     }
 
     if (data.socketCode === 'WS_CONFIG_ERROR') {
-      useToast().showToast(data.message, 2000, 'error');
+      toast.add({
+        title: "Websocket Error",
+        description: data.message,
+        color: "error",
+        duration: 2000
+      })
     }
 
     if (data.socketCode === 'WS_SEND_CONFIG') {
@@ -287,50 +103,30 @@ if (props.id) {
       useEditor().setSocketConfig(true);
       useEditor().setConfigLoaded(true);
       useEditor().setCurrentSection(Object.keys(dt.config)[0]);
-      useToast().showToast('Success', 2000, "success");
+      toast.add({
+        title: 'Success',
+        color: 'success',
+        duration: 2000
+      })
     }
   }
 
-  ws.onclose = (event) => {
+  ws.onclose = () => {
     useEditor().setConfigLoaded(false);
-    useToast().showToast('Web Socket Connection Terminated', 2000, "error");
+    toast.add({
+      title: "Session Closed",
+      description: "Web Socket Connection Terminated",
+      color: "error",
+      duration: 2000
+    })
+
     setTimeout(() => {
       window.location.href = "/";
     }, 2000);
   }
-
 }
+
+const sectionTitle = computed(() => {
+  return headerToDisplay(useEditor().currentSection)
+})
 </script>
-
-<style>
-.mctooltip {
-  min-width: 50px;
-  max-width: 300px;
-  min-height: 50px;
-  background: rgba(0, 0, 0, 0.8);
-  position: absolute;
-  top: 0;
-  left: 0;
-  border-radius: 5px;
-  padding: 2px;
-  z-index: 5000;
-}
-
-.mctooltip-inner {
-  border: 2px solid #290560;
-  padding: 2px 5px;
-}
-
-.mctooltip .title {
-  margin-bottom: 0;
-  font-family: 'MC', Fallback, sans-serif !important;
-  color: yellow;
-  font-size: 18px;
-}
-
-.mctooltip .downloads {
-  font-family: 'MC', Fallback, sans-serif !important;
-  font-size: 14px;
-  color: aqua;
-}
-</style>
