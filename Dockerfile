@@ -1,10 +1,10 @@
-FROM node:20-alpine as frontend-builder
+FROM node:22-alpine as frontend-builder
 
 WORKDIR /app
 
 COPY ./frontend/ .
-RUN yarn
-RUN yarn build-only
+RUN npm install
+RUN npm run build
 
 FROM amazoncorretto:17-alpine-jdk AS builder
 
