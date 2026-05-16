@@ -6,7 +6,7 @@ COPY ./frontend/ .
 RUN yarn
 RUN yarn build-only
 
-FROM openjdk:17-alpine AS builder
+FROM amazoncorretto:17-alpine-jdk AS builder
 
 # Copy Working FIles
 WORKDIR /app
@@ -17,7 +17,7 @@ RUN chmod +x gradlew
 RUN ./gradlew shadowJar
 
 # Stage 2: Create Main Docker File
-FROM openjdk:17-alpine
+FROM amazoncorretto:17-alpine-jdk
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/backend.jar /app/backend.jar
