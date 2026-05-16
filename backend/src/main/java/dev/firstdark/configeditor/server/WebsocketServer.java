@@ -22,13 +22,13 @@ public class WebsocketServer {
     private final Gson gson = new GsonBuilder().serializeNulls().create();
 
     public WebsocketServer(Javalin app) {
-        app.ws("/ws/config", ws-> {
+        app.unsafe.routes.ws("/ws/config", ws-> {
             ws.onConnect(this::onSocketConnect);
             ws.onMessage(this::onSocketMessage);
             ws.onClose(this::onSocketClose);
         });
 
-        app.ws("/ws/frontend", ws-> {
+        app.unsafe.routes.ws("/ws/frontend", ws-> {
             ws.onConnect(this::onFrontendSocketConnect);
             ws.onMessage(this::onFrontendSocketMessage);
             ws.onClose(this::onFrontendSocketClose);

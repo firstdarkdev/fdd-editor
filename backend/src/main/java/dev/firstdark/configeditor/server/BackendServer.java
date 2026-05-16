@@ -23,21 +23,23 @@ public class BackendServer {
 
     public BackendServer(int port) {
         Javalin javalin = Javalin.create(config -> {
-            config.staticFiles.add("web", Location.EXTERNAL);
+            config.startup.showJavalinBanner = false;
+            config.startup.showOldJavalinVersionWarning = false;
             config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
             config.jsonMapper(new JavalinGson());
 
             if (new File("web/index.html").exists()) {
+                config.staticFiles.add("web", Location.EXTERNAL);
                 config.spaRoot.addFile("/", "web/index.html", Location.EXTERNAL);
             }
 
-        });
+            config.routes.apiBuilder(() -> path("/v1", () -> {
+                post("/parseupload", this::handleUpload);
+                post("/parseembed", this::handleEmbed);
+                post("/saveconfig", this::handleSave);
+            }));
 
-        javalin.unsafeConfig().router.apiBuilder(() -> path("/v1", () -> {
-           post("/parseupload", this::handleUpload);
-            post("/parseembed", this::handleEmbed);
-           post("/saveconfig", this::handleSave);
-        }));
+        });
 
         websocketServer = new WebsocketServer(javalin);
 
