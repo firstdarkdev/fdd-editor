@@ -18,14 +18,15 @@
 </template>
 <script setup lang="ts">
 import {downloadFile, saveConfigFile} from "../../composables/EditorFunctions.ts";
-import {ref, watch} from "vue";
+import {computed} from "vue";
 import {useEditor} from "../../stores/editor.ts";
 
-const isOpen = ref(false)
+const isOpen = computed({
+  get: () => useEditor().hasDownloadConfig.isSaved,
 
-watch(isOpen, () => {
-  if (!isOpen.value) {
-    useEditor().setDownloadConfig(false, "")
+  set: (value) => {
+    if (!value)
+      useEditor().setDownloadConfig(false, '')
   }
 })
 </script>
